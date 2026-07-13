@@ -1,115 +1,113 @@
 # RAG Document Q&A (`rag-doc-qa`)
 
-[![Milestones](https://img.shields.io/badge/Milestones-M1–M2%20complete-2ea44f)](./MILESTONES.md)
+[![Milestones](https://img.shields.io/badge/Milestones-M1–M3%20complete-2ea44f)](./MILESTONES.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![RAG](https://img.shields.io/badge/GenAI-RAG%20pipeline-7C3AED)](./MILESTONES.md)
 
-Chat over **your PDFs** with retrieval + answers + citations (answer generation lands in M3).
+Ask questions over **your PDFs**. The app **retrieves** relevant chunks, then an **LLM answers only from that context** and shows **citations**.
 
-**Author:** [Nilima Satapathy](https://github.com/nilima-satapathy) · Progress board: **[ai-career-journey](https://github.com/nilima-satapathy/ai-career-journey)**
+**Author:** [Nilima Satapathy](https://github.com/nilima-satapathy) · Progress: **[ai-career-journey](https://github.com/nilima-satapathy/ai-career-journey)**
 
 | | |
 |---|---|
-| **Status** | In progress — **M1–M2 complete** |
-| **Stack so far** | Python · pypdf · Chroma · local embeddings (MiniLM) |
-| **Planned next** | LLM answers + citations · Streamlit · eval · deploy |
-| **Releases** | [milestone tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
+| **Status** | In progress — **M1–M3 complete** |
+| **Stack** | Python · pypdf · Chroma · SpaceXAI/xAI (Grok) · (next: Streamlit) |
+| **Releases** | [tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
 
 ---
 
-## What’s done
+## Pipeline so far
 
-| Milestone | Shipped |
-|-----------|---------|
-| **M1** | PDF load + configurable overlapping chunks |
-| **M2** | Embed chunks → Chroma vector store → similarity search CLI |
+```text
+PDF → chunks (M1) → embeddings + Chroma (M2) → top-k chunks
+                                              → LLM answer + citations (M3)
+                                              → Streamlit UI (M4)
+```
 
 ---
 
-## Setup (Windows / PowerShell)
+## Setup
 
 ```powershell
 cd Desktop\Code\rag-doc-qa
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python scripts/generate_sample_pdfs.py   # if data/ is empty
+python scripts/generate_sample_pdfs.py   # if needed
+python scripts/build_index.py
 ```
+
+### API key (M3)
+
+1. Create a key at [console.x.ai](https://console.x.ai) and add **credits** to your team.  
+2. Copy `.env.example` → `.env`  
+3. Put only the key (one line):
+
+```env
+XAI_API_KEY=xai-your-key-here
+```
+
+Never commit `.env`.
 
 ---
 
-## Milestone 1 — chunking
+## Commands
+
+### M1 — chunk
 
 ```powershell
 python scripts/run_m1_chunk.py
-python scripts/run_m1_chunk.py --chunk-size 400 --chunk-overlap 80
 ```
 
-| Setting | Default | Meaning |
-|---------|---------|---------|
-| `chunk_size` | 800 | Max characters per chunk |
-| `chunk_overlap` | 120 | Shared chars between neighbors |
-
----
-
-## Milestone 2 — index + search
+### M2 — search
 
 ```powershell
-# 1) Build / rebuild vector index (first run downloads a small embedding model)
 python scripts/build_index.py
-
-# 2) Search by meaning (not just keywords)
-python scripts/run_m2_search.py "What is ApiClient timeout?"
-python scripts/run_m2_search.py "What is Page Object Model?"
-python scripts/run_m2_search.py "What is RAG?" --top-k 3
-
-# Interactive mode
-python scripts/run_m2_search.py
+python scripts/run_m2_search.py "What is RAG?"
 ```
 
-**How it works (simple):**
+### M3 — answer + citations
 
-1. Chunks from M1 are turned into **embeddings** (number fingerprints of meaning).  
-2. Stored in **Chroma** under `.chroma/` (local folder).  
-3. Your question is embedded too; Chroma returns the **closest chunks**.
+```powershell
+python scripts/run_m3_ask.py "What timeout does ApiClient use?"
+python scripts/run_m3_ask.py "What is Page Object Model?"
+python scripts/run_m3_ask.py "What is the capital of Mars?"  # should not invent from docs
+```
 
-No API key required for M2 (local MiniLM via Chroma).
+**How M3 decides:**
 
-| Setting | Default | Env var |
-|---------|---------|---------|
-| Chroma folder | `.chroma/` | `RAG_CHROMA_DIR` |
-| Collection | `rag_docs` | `RAG_COLLECTION_NAME` |
-| Results | 3 | `RAG_TOP_K` |
+1. Search top-k chunks (default 3).  
+2. If best **distance** is worse than `RAG_MAX_DISTANCE` (default `1.05`) → **no LLM**, reply “I don’t know…”.  
+3. Else send context + question to **Grok** with a strict “answer only from context” prompt.  
+4. Print answer + retrieved citations (file, chunk, snippet, distance).
 
----
-
-## Sample documents (`data/`)
-
-| File | About |
-|------|--------|
-| `project1-api-automation-notes.pdf` | ApiClient, 77 tests, negatives |
-| `project2-playwright-pom-notes.pdf` | Playwright POM, SauceDemo |
-| `rag-and-ai-quality-notes.pdf` | RAG pipeline + eval ideas |
+| Env | Default | Meaning |
+|-----|---------|---------|
+| `XAI_API_KEY` | (required) | SpaceXAI / xAI key |
+| `RAG_LLM_MODEL` | `grok-4.5` | Chat model |
+| `RAG_TOP_K` | `3` | Chunks to retrieve |
+| `RAG_MAX_DISTANCE` | `1.05` | Weak-retrieval cutoff |
 
 ---
 
-## Project layout (M2)
+## Project layout
 
 ```text
 rag-doc-qa/
-├── data/                     # sample PDFs
+├── data/                 # sample PDFs
 ├── scripts/
-│   ├── generate_sample_pdfs.py
 │   ├── run_m1_chunk.py
-│   ├── build_index.py        # M2: embed + store
-│   └── run_m2_search.py      # M2: similarity search
+│   ├── build_index.py
+│   ├── run_m2_search.py
+│   └── run_m3_ask.py
 └── src/
-    ├── config.py
-    ├── ingest.py             # M1: load + chunk
-    └── retrieve.py           # M2: Chroma index + search
+    ├── ingest.py         # load + chunk
+    ├── retrieve.py       # Chroma index + search
+    ├── llm_client.py     # xAI OpenAI-compatible client
+    └── generate.py       # RAG answer + citations
 ```
 
-**Next (M3):** Take top chunks → ask an LLM to answer **only from that context** + show citations.
+**Next (M4):** Streamlit chat website (local browser UI).
 
 ---
 

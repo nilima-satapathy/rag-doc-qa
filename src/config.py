@@ -3,12 +3,21 @@ Shared settings for the RAG pipeline.
 
 M1: chunk size / overlap
 M2: Chroma path, collection name, top_k
+M3: LLM (SpaceXAI / xAI) + weak-retrieval threshold
 """
 
 from __future__ import annotations
 
 import os
 from pathlib import Path
+
+# Load .env if present (never commit real .env)
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+except ImportError:
+    pass
 
 # Project root = parent of src/
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,3 +39,13 @@ TOP_K = int(os.getenv("RAG_TOP_K", "3"))
 
 if TOP_K < 1:
     raise ValueError("RAG_TOP_K must be >= 1")
+
+# --- LLM (M3) — SpaceXAI via xAI OpenAI-compatible API ---
+XAI_API_KEY = os.getenv("XAI_API_KEY", "")
+XAI_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
+# Default chat model (override with RAG_LLM_MODEL if needed)
+LLM_MODEL = os.getenv("RAG_LLM_MODEL", "grok-4.5")
+
+# If the best chunk distance is worse than this, treat retrieval as too weak
+# (Chroma cosine distance: lower is better; good hits in our demos were ~0.6–0.8)
+MAX_DISTANCE = float(os.getenv("RAG_MAX_DISTANCE", "1.05"))
