@@ -1,12 +1,19 @@
 # RAG Document Q&A (`rag-doc-qa`)
 
+[![Milestones](https://img.shields.io/badge/Milestones-M1%20complete-2ea44f)](./MILESTONES.md)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![RAG](https://img.shields.io/badge/GenAI-RAG%20pipeline-7C3AED)](./MILESTONES.md)
+
 Chat over **your PDFs** with retrieval + answers + citations (full pipeline in later milestones).
+
+**Author:** [Nilima Satapathy](https://github.com/nilima-satapathy) · Progress board: **[ai-career-journey](https://github.com/nilima-satapathy/ai-career-journey)**
 
 | | |
 |---|---|
 | **Status** | In progress — **M1 complete** |
 | **Stack (planned)** | Python · pypdf · embeddings · Chroma · LLM · Streamlit |
 | **Progress board** | [ai-career-journey](https://github.com/nilima-satapathy/ai-career-journey) |
+| **Releases** | [milestone tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
 
 ---
 
