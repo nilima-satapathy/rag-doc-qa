@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-label="DocQ RAG architecture">
+  <rect width="920" height="420" fill="#0b1220"/>
+  <text x="40" y="42" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700">DocQ — RAG architecture</text>
+  <text x="40" y="66" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">PDF → chunk → embed → retrieve → grounded answer + citations</text>
+
+  <!-- Ingest boxes -->
+  <rect x="40" y="110" width="130" height="56" rx="10" fill="#121a2b" stroke="#6d7cff" stroke-width="1.5"/>
+  <text x="105" y="135" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">PDFs</text>
+  <text x="105" y="153" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">data/*.pdf</text>
+
+  <path d="M170 138 H200" stroke="#6d7cff" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="200" y="110" width="130" height="56" rx="10" fill="#121a2b" stroke="#6d7cff" stroke-width="1.5"/>
+  <text x="265" y="135" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Chunk</text>
+  <text x="265" y="153" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">size + overlap</text>
+
+  <path d="M330 138 H360" stroke="#6d7cff" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="360" y="110" width="130" height="56" rx="10" fill="#121a2b" stroke="#6d7cff" stroke-width="1.5"/>
+  <text x="425" y="135" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Embed</text>
+  <text x="425" y="153" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">Chroma default</text>
+
+  <path d="M490 138 H520" stroke="#6d7cff" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="520" y="110" width="150" height="56" rx="10" fill="#1a2340" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="595" y="135" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Chroma store</text>
+  <text x="595" y="153" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">.chroma /</text>
+
+  <!-- Query path -->
+  <rect x="40" y="240" width="150" height="56" rx="10" fill="#121a2b" stroke="#e8b339" stroke-width="1.5"/>
+  <text x="115" y="265" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Streamlit UI</text>
+  <text x="115" y="283" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">DocQ chat</text>
+
+  <path d="M190 268 H230" stroke="#e8b339" stroke-width="2" fill="none" marker-end="url(#arrowY)"/>
+
+  <rect x="230" y="240" width="150" height="56" rx="10" fill="#121a2b" stroke="#e8b339" stroke-width="1.5"/>
+  <text x="305" y="265" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Retrieve top‑k</text>
+  <text x="305" y="283" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">similarity search</text>
+
+  <!-- vertical from chroma to retrieve -->
+  <path d="M595 166 V210 H305 V240" stroke="#3ecf8e" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+
+  <path d="M380 268 H420" stroke="#e8b339" stroke-width="2" fill="none" marker-end="url(#arrowY)"/>
+
+  <rect x="420" y="230" width="200" height="76" rx="10" fill="#121a2b" stroke="#6d7cff" stroke-width="1.5"/>
+  <text x="520" y="258" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Answer engine</text>
+  <text x="520" y="278" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">extractive · Gemini · Ollama · xAI</text>
+  <text x="520" y="294" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">grounded + citations</text>
+
+  <path d="M620 268 H660" stroke="#e8b339" stroke-width="2" fill="none" marker-end="url(#arrowY)"/>
+
+  <rect x="660" y="240" width="200" height="56" rx="10" fill="#1a2340" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="760" y="265" text-anchor="middle" fill="#e8eefc" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600">Answer + sources</text>
+  <text x="760" y="283" text-anchor="middle" fill="#8b9bb8" font-family="Segoe UI, system-ui, sans-serif" font-size="11">file · chunk · distance</text>
+
+  <!-- Eval -->
+  <rect x="40" y="340" width="840" height="50" rx="10" fill="#121a2b" stroke="#8b9bb8" stroke-width="1"/>
+  <text x="460" y="370" text-anchor="middle" fill="#c5d0e6" font-family="Segoe UI, system-ui, sans-serif" font-size="13">
+    Eval (M5): golden questions → retrieval hit@3 13/13 · keyword-in-context · latency
+  </text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#6d7cff"/>
+    </marker>
+    <marker id="arrowY" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#e8b339"/>
+    </marker>
+  </defs>
+</svg>

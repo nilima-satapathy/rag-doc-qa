@@ -27,6 +27,43 @@ def reload_env() -> None:
         pass
 
 
+def _from_streamlit_secrets(name: str) -> str:
+    """Read optional Streamlit Cloud secrets (no-op outside Streamlit)."""
+    import sys
+
+    # Do not import streamlit from CLI/eval — only read secrets if already loaded
+    if "streamlit" not in sys.modules:
+        return ""
+    try:
+        import streamlit as st
+
+        secrets = getattr(st, "secrets", None)
+        if secrets is None:
+            return ""
+        # Support both flat keys and nested [general] style
+        if name in secrets:
+            val = secrets[name]
+            return str(val).strip() if val is not None else ""
+        general = secrets.get("general", None) if hasattr(secrets, "get") else None
+        if general is not None and name in general:
+            val = general[name]
+            return str(val).strip() if val is not None else ""
+    except Exception:  # noqa: BLE001 — secrets unavailable outside Streamlit
+        pass
+    return ""
+
+
+def _env(name: str, default: str = "") -> str:
+    """Env var, then Streamlit secrets, then default."""
+    val = (os.getenv(name, "") or "").strip()
+    if val:
+        return val
+    secret = _from_streamlit_secrets(name)
+    if secret:
+        return secret
+    return default
+
+
 reload_env()
 
 DATA_DIR = Path(os.getenv("RAG_DATA_DIR", ROOT / "data"))
@@ -51,8 +88,6 @@ if TOP_K < 1:
 
 # --- LLM provider (M3+) ---
 # extractive | ollama | gemini | xai
-def _env(name: str, default: str = "") -> str:
-    return (os.getenv(name, default) or default).strip()
 
 
 def get_llm_provider() -> str:

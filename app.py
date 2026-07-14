@@ -19,7 +19,7 @@ import streamlit as st
 import src.config as config
 from src.generate import answer_question
 from src.ingest import list_pdfs
-from src.retrieve import build_index, get_client
+from src.retrieve import build_index, ensure_index, get_client
 from src.ui_theme import DEFAULT_THEME, THEMES, build_css, theme_options
 
 CHROMA_DIR = config.CHROMA_DIR
@@ -83,6 +83,15 @@ def index_status() -> tuple[bool, int, str]:
         return False, 0, "Not built yet"
 
 
+@st.cache_resource(show_spinner="Preparing document index…")
+def bootstrap_index() -> dict:
+    """
+    Build Chroma index once per server process if missing/empty.
+    Required for Streamlit Cloud (.chroma is not committed).
+    """
+    return ensure_index(DATA_DIR)
+
+
 def render_citations(citations: list) -> None:
     if not citations:
         st.caption("No citations returned.")
@@ -128,6 +137,12 @@ def provider_status_message(provider: str) -> None:
 def main() -> None:
     theme_id = init_theme()
     apply_theme(theme_id)
+
+    # Cold-start / deploy: auto-index sample PDFs if store is empty
+    try:
+        bootstrap_index()
+    except Exception:  # noqa: BLE001 — surface via index_status / Rebuild button
+        pass
 
     ok, count, status_msg = index_status()
     pdfs = list_pdfs(DATA_DIR)

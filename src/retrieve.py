@@ -42,6 +42,56 @@ def get_client(persist_dir: Path = CHROMA_DIR) -> chromadb.PersistentClient:
     return chromadb.PersistentClient(path=str(persist_dir))
 
 
+def index_chunk_count(
+    *,
+    persist_dir: Path = CHROMA_DIR,
+    collection_name: str = COLLECTION_NAME,
+) -> int:
+    """Return number of vectors in the collection, or 0 if missing/empty."""
+    try:
+        client = get_client(persist_dir)
+        col = client.get_collection(collection_name)
+        return int(col.count())
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def ensure_index(
+    data_dir: Path = DATA_DIR,
+    *,
+    persist_dir: Path = CHROMA_DIR,
+    collection_name: str = COLLECTION_NAME,
+    chunk_size: int = CHUNK_SIZE,
+    chunk_overlap: int = CHUNK_OVERLAP,
+) -> dict[str, Any]:
+    """
+    Ensure a non-empty Chroma index exists (for deploy / cold start).
+
+    If the collection is missing or empty, builds from data_dir PDFs.
+    Safe to call on every app start; no-op when index already has vectors.
+    """
+    count = index_chunk_count(
+        persist_dir=persist_dir, collection_name=collection_name
+    )
+    if count > 0:
+        return {
+            "chunk_count": count,
+            "collection": collection_name,
+            "persist_dir": str(Path(persist_dir).resolve()),
+            "built": False,
+        }
+    stats = build_index(
+        data_dir,
+        persist_dir=persist_dir,
+        collection_name=collection_name,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        reset=True,
+    )
+    stats["built"] = True
+    return stats
+
+
 def build_index(
     data_dir: Path = DATA_DIR,
     *,

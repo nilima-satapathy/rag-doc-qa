@@ -7,7 +7,10 @@
 | M3 | LLM answer with retrieved context + citations | Done | 2026-07-13 |
 | M4 | Streamlit chat UI | Done | 2026-07-14 |
 | M5 | Eval script on ≥10 questions | Done | 2026-07-14 |
-| M6 | Deploy + README polish + architecture diagram | Pending | — |
+| M6 | Deploy + README polish + architecture diagram | Ready* | 2026-07-14 |
+
+\*M6 code and docs are complete (auto-index cold start, secrets, diagram, deploy guide).  
+**Final step:** publish on [Streamlit Community Cloud](./docs/DEPLOY.md) and paste the live URL into `README.md`.
 
 ## M1 notes
 
@@ -19,7 +22,7 @@
 
 ## M3 notes
 
-- Grok answer + citations; weak retrieval fallback
+- Grok / Gemini / extractive answer + citations; weak retrieval fallback
 
 ## M4 notes
 
@@ -31,3 +34,11 @@
 - `eval/run_eval.py` — retrieval hit@k + keyword-in-context + latency
 - Latest local run (top_k=3): **retrieval 13/13 (100%)**, keyword 13/13, avg **~292 ms**
 - Results snapshot: `eval/last_results.json`
+
+## M6 notes
+
+- Auto-build index on cold start (`ensure_index` / `bootstrap_index`) for Cloud
+- Streamlit secrets support in `src/config.py`
+- `.streamlit/config.toml`, `runtime.txt`, `docs/DEPLOY.md`
+- Architecture: `diagrams/architecture.svg` + mermaid notes
+- README polish (demo placeholder, deploy table, layout)

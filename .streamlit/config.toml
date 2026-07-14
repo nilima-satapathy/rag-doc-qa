@@ -1,0 +1,16 @@
+# Streamlit config for local + Community Cloud deploy
+
+[server]
+headless = true
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#6d7cff"
+backgroundColor = "#0b1220"
+secondaryBackgroundColor = "#121a2b"
+textColor = "#e8eefc"
+font = "sans serif"

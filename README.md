@@ -1,9 +1,10 @@
 # RAG Document Q&A (`rag-doc-qa`)
 
-[![Milestones](https://img.shields.io/badge/Milestones-M1–M5%20complete-2ea44f)](./MILESTONES.md)
+[![Milestones](https://img.shields.io/badge/Milestones-M1–M6-2ea44f)](./MILESTONES.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B)](https://streamlit.io)
 [![Eval](https://img.shields.io/badge/Retrieval%20hit%403-13%2F13-success)](./eval/last_results.json)
+[![Deploy](https://img.shields.io/badge/Deploy-Streamlit%20Cloud-ready-blue)](./docs/DEPLOY.md)
 
 Ask questions over **your PDFs** in a **browser chat**. The app retrieves relevant chunks, answers with an LLM **only from that context**, shows **citations**, and includes a **measured eval set**.
 
@@ -11,25 +12,45 @@ Ask questions over **your PDFs** in a **browser chat**. The app retrieves releva
 
 | | |
 |---|---|
-| **Status** | In progress — **M1–M5 complete** |
-| **Stack** | Python · pypdf · Chroma · SpaceXAI/xAI · Streamlit |
+| **Status** | **M1–M6 ready** — public deploy guide + architecture diagram |
+| **Live demo** | *Deploy once → paste URL here* (see [docs/DEPLOY.md](./docs/DEPLOY.md)) |
+| **Stack** | Python · pypdf · Chroma · Streamlit · Gemini / Extractive / Ollama / xAI |
 | **Releases** | [tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
 
 ---
 
-## Pipeline
+## Live demo
+
+1. Follow **[Deploy on Streamlit Community Cloud](./docs/DEPLOY.md)** (~5 minutes).
+2. After the app is live, update this section with your URL, for example:
 
 ```text
-PDF → chunks (M1) → Chroma search (M2) → Grok answer + citations (M3)
-                                              ↓
-                                    Streamlit chat UI (M4)
-                                              ↓
-                                    Eval (M5) ✅ → Deploy public URL (M6)
+https://YOUR-APP-NAME.streamlit.app
 ```
+
+Default answer mode is **extractive** (no API key). Optional free Gemini via Streamlit secrets.
 
 ---
 
-## Evaluation (M5) — required portfolio signal
+## Architecture
+
+![DocQ architecture](./diagrams/architecture.svg)
+
+```text
+PDF → chunks (M1) → Chroma search (M2) → Answer + citations (M3)
+                                              ↓
+                                    Streamlit chat UI (M4)
+                                              ↓
+                                    Eval hit@3 (M5) → Public deploy (M6)
+```
+
+Details: [diagrams/architecture.md](./diagrams/architecture.md)
+
+**Cold start:** the app **auto-builds** the Chroma index from `data/*.pdf` if the store is empty (required for Cloud; `.chroma/` is not committed).
+
+---
+
+## Evaluation (M5) — portfolio signal
 
 Golden set: **`eval/questions.json`** (14 cases: 13 in-corpus + 1 out-of-scope).
 
@@ -49,7 +70,7 @@ python eval/run_eval.py --top-k 3
 | **Retrieval hit-rate@3** | **13/13 (100%)** |
 | Keyword-in-context | 13/13 (100%) |
 | Avg retrieval latency | ~292 ms |
-| Known limits | Small corpus; out-of-scope questions still return *some* nearest chunks (LLM “I don’t know” relies on M3 distance/prompt) |
+| Known limits | Small corpus; out-of-scope still returns nearest chunks (LLM “I don’t know” uses distance + prompt) |
 
 Snapshot: [`eval/last_results.json`](./eval/last_results.json)
 
@@ -57,7 +78,7 @@ Snapshot: [`eval/last_results.json`](./eval/last_results.json)
 
 ---
 
-## Quick start — website (M4)
+## Quick start — local
 
 ```powershell
 cd Desktop\Code\rag-doc-qa
@@ -67,11 +88,23 @@ pip install -r requirements.txt
 python scripts/generate_sample_pdfs.py
 python scripts/build_index.py
 
-# .env → XAI_API_KEY=...  (+ credits at https://console.x.ai)
+# Optional .env — see .env.example (default: extractive, free)
 streamlit run app.py
 ```
 
 Browser: **http://localhost:8501**
+
+---
+
+## Deploy (M6)
+
+| Step | Action |
+|------|--------|
+| 1 | Push `main` to GitHub (this repo) |
+| 2 | [share.streamlit.io](https://share.streamlit.io) → **New app** |
+| 3 | Repo `nilima-satapathy/rag-doc-qa`, branch `main`, file `app.py` |
+| 4 | Deploy · optional secrets in [docs/DEPLOY.md](./docs/DEPLOY.md) |
+| 5 | Paste public URL into this README |
 
 ---
 
@@ -91,17 +124,43 @@ python eval/run_eval.py
 
 ```text
 rag-doc-qa/
-├── app.py
-├── data/                     # sample PDFs
+├── app.py                 # Streamlit DocQ UI (Cloud entrypoint)
+├── data/                  # sample PDFs
+├── diagrams/              # architecture (M6)
+├── docs/DEPLOY.md         # Streamlit Cloud steps
 ├── eval/
-│   ├── questions.json        # golden questions
+│   ├── questions.json
 │   ├── run_eval.py
-│   └── last_results.json     # last measured run
+│   └── last_results.json
 ├── scripts/
-└── src/
+├── src/
+│   ├── config.py          # env + Streamlit secrets
+│   ├── ingest.py
+│   ├── retrieve.py        # index + ensure_index (auto cold start)
+│   ├── generate.py
+│   ├── llm_client.py
+│   └── ui_theme.py
+├── .streamlit/config.toml
+├── requirements.txt
+└── runtime.txt            # Python 3.11 on Cloud
 ```
 
-**Next (M6):** public deploy + architecture diagram + final README polish.
+---
+
+## Answer modes
+
+| Mode | Cost | Needs |
+|------|------|--------|
+| **extractive** | Free | Nothing (default) |
+| **gemini** | Free tier | `GEMINI_API_KEY` |
+| **ollama** | Free | Local Ollama |
+| **xai** | Paid credits | `XAI_API_KEY` |
+
+---
+
+## Milestones
+
+See **[MILESTONES.md](./MILESTONES.md)** — M1–M5 complete; M6 deploy assets shipped (mark live URL after Cloud publish).
 
 ---
 
