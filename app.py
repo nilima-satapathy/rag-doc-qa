@@ -247,8 +247,9 @@ def main() -> None:
 <div class="app-topbar">
   <div class="app-logo">
     <div class="app-logo-text">
-      <h1 class="title docq-name">DocQ</h1>
-      <div class="sub">Ask your documents — with sources</div>
+      <h1 class="title docq-name">Doc<span class="brand-accent">Q</span></h1>
+      <div class="domain">docq · document intelligence</div>
+      <div class="sub">Ask your documents — answers with sources you can verify</div>
     </div>
   </div>
   <div class="{status_class}"><span class="dot"></span>{status_msg}</div>

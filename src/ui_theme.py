@@ -259,61 +259,60 @@ def build_css(theme_id: str) -> str:
   /* ===== Custom components ===== */
   .app-topbar {{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 1.1rem;
-    padding-bottom: 0.85rem;
+    gap: 16px;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 0 1.1rem 0;
     border-bottom: 1px solid var(--border-soft);
   }}
   .app-logo {{
     display: flex;
-    align-items: center;
-    gap: 12px;
-  }}
-  .app-logo-mark {{
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    background: linear-gradient(145deg, var(--primary) 0%, #4c5fd5 100%);
-    display: grid;
-    place-items: center;
-    font-size: 18px;
-    box-shadow: 0 6px 18px var(--primary-soft);
+    align-items: flex-start;
+    gap: 0;
+    flex: 1;
   }}
   .app-logo-text {{
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 0.15rem;
+    width: 100%;
   }}
-  .app-logo-text .title {{
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-  }}
-  .app-logo-text .title.docq-name {{
-    font-size: 2.15rem !important;
+  /* Website wordmark — primary brand */
+  .app-logo-text .title.docq-name,
+  h1.title.docq-name {{
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 3rem !important;
     font-weight: 800 !important;
-    letter-spacing: -0.045em !important;
-    line-height: 1.1 !important;
+    letter-spacing: -0.055em !important;
+    line-height: 1.05 !important;
+    color: var(--text) !important;
+    -webkit-text-fill-color: var(--text) !important;
+    background: none !important;
+    font-family: var(--font) !important;
+  }}
+  .app-logo-text .title.docq-name .brand-accent {{
     color: var(--primary) !important;
     -webkit-text-fill-color: var(--primary) !important;
-    background: none !important;
   }}
   .app-logo-text .sub {{
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     color: var(--muted);
     font-weight: 500;
     letter-spacing: 0.01em;
-    margin-top: 0.2rem;
+    margin-top: 0.35rem;
+    max-width: 28rem;
   }}
-  .app-logo-mark {{
-    width: 48px !important;
-    height: 48px !important;
-    font-size: 22px !important;
-    border-radius: 13px !important;
+  .app-logo-text .domain {{
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color: var(--primary);
+    opacity: 0.9;
+    margin-top: 0.15rem;
+    font-family: var(--mono);
   }}
   /* About expander polish */
   div[data-testid="stExpander"] {{
