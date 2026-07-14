@@ -13,14 +13,15 @@ from __future__ import annotations
 from openai import OpenAI
 
 from src.config import (
-    GEMINI_API_KEY,
     GEMINI_MODEL,
     LLM_MODEL,
     LLM_PROVIDER,
-    OLLAMA_BASE_URL,
-    OLLAMA_MODEL,
-    XAI_API_KEY,
     XAI_BASE_URL,
+    get_gemini_api_key,
+    get_llm_provider,
+    get_ollama_settings,
+    get_xai_api_key,
+    reload_env,
 )
 
 
@@ -32,17 +33,19 @@ def chat_completion(
     temperature: float = 0.2,
     provider: str | None = None,
 ) -> str:
-    """Single-turn chat; returns assistant text."""
-    prov = (provider or LLM_PROVIDER).strip().lower()
+    """Single-turn chat; returns assistant text. Re-reads .env on every call."""
+    reload_env()
+    prov = (provider or get_llm_provider() or LLM_PROVIDER).strip().lower()
 
     if prov == "extractive":
         raise RuntimeError("extractive mode does not call an LLM")
 
     if prov == "ollama":
+        base_url, ollama_model = get_ollama_settings()
         return _chat_openai_compatible(
-            api_key=os_getenv_dummy_key(),
-            base_url=OLLAMA_BASE_URL,
-            model=model or OLLAMA_MODEL or LLM_MODEL,
+            api_key="ollama",
+            base_url=base_url,
+            model=model or ollama_model or LLM_MODEL,
             system=system,
             user=user,
             temperature=temperature,
@@ -54,19 +57,20 @@ def chat_completion(
         return _chat_gemini(
             system=system,
             user=user,
-            model=model or GEMINI_MODEL or LLM_MODEL,
+            model=model or GEMINI_MODEL or LLM_MODEL or "gemini-2.0-flash",
             temperature=temperature,
         )
 
     if prov == "xai":
-        if not XAI_API_KEY:
+        xai_key = get_xai_api_key()
+        if not xai_key:
             raise RuntimeError(
                 "XAI_API_KEY is not set. For free use, set RAG_LLM_PROVIDER=extractive "
                 "or use ollama / gemini. See .env.example."
             )
         return _chat_openai_compatible(
-            api_key=XAI_API_KEY,
-            base_url=XAI_BASE_URL,
+            api_key=xai_key,
+            base_url=XAI_BASE_URL or "https://api.x.ai/v1",
             model=model or LLM_MODEL or "grok-4.5",
             system=system,
             user=user,
@@ -79,11 +83,6 @@ def chat_completion(
         f"Unknown RAG_LLM_PROVIDER={prov!r}. "
         "Use: extractive | ollama | gemini | xai"
     )
-
-
-def os_getenv_dummy_key() -> str:
-    # Ollama ignores the key but OpenAI client requires a non-empty string
-    return "ollama"
 
 
 def _chat_openai_compatible(
@@ -132,12 +131,17 @@ def _chat_gemini(
     model: str,
     temperature: float,
 ) -> str:
-    if not GEMINI_API_KEY:
+    key = get_gemini_api_key()
+    if not key:
         raise RuntimeError(
             "GEMINI_API_KEY is not set.\n"
             "1) Free key: https://aistudio.google.com/apikey\n"
-            "2) Put GEMINI_API_KEY=... in .env\n"
-            "3) Set RAG_LLM_PROVIDER=gemini"
+            "2) Open file: rag-doc-qa/.env  (same folder as app.py)\n"
+            "3) Add a line exactly like:\n"
+            "   GEMINI_API_KEY=AIza...\n"
+            "   RAG_LLM_PROVIDER=gemini\n"
+            "4) Save file, stop Streamlit (Ctrl+C), run: streamlit run app.py\n"
+            "Do NOT put the key only in the sidebar — it must be in .env"
         )
 
     try:
@@ -148,7 +152,7 @@ def _chat_gemini(
             "  pip install google-generativeai"
         ) from exc
 
-    genai.configure(api_key=GEMINI_API_KEY)
+    genai.configure(api_key=key)
     gm = genai.GenerativeModel(
         model_name=model,
         system_instruction=system,
@@ -161,7 +165,8 @@ def _chat_gemini(
     except Exception as exc:  # noqa: BLE001
         raise RuntimeError(
             f"Gemini API error: {exc}\n"
-            "Check your free key at https://aistudio.google.com/apikey"
+            "Check key at https://aistudio.google.com/apikey "
+            "and try GEMINI_MODEL=gemini-1.5-flash"
         ) from exc
 
     text = getattr(resp, "text", None)

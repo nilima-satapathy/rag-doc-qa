@@ -34,8 +34,6 @@ LLM_MODEL = config.LLM_MODEL
 LLM_PROVIDER = config.LLM_PROVIDER
 MAX_DISTANCE = config.MAX_DISTANCE
 TOP_K = config.TOP_K
-XAI_API_KEY = getattr(config, "XAI_API_KEY", "") or ""
-GEMINI_API_KEY = getattr(config, "GEMINI_API_KEY", "") or ""
 
 EXAMPLE_QUESTIONS = [
     "What timeout does ApiClient use?",
@@ -107,20 +105,29 @@ def render_citations(citations: list) -> None:
 
 
 def provider_status_message(provider: str) -> None:
+    # Re-read .env every sidebar render so a saved key shows up after refresh
+    gemini_key = config.get_gemini_api_key()
+    xai_key = config.get_xai_api_key()
+
     if provider == "extractive":
         st.success("Free mode — answers from matching PDF text (no API cost).")
     elif provider == "ollama":
         st.info("Needs Ollama running locally (`ollama pull llama3.2`).")
     elif provider == "gemini":
-        if GEMINI_API_KEY:
-            st.success(f"Gemini ready · model `{LLM_MODEL}`")
+        if gemini_key:
+            st.success(
+                f"Gemini key loaded ({len(gemini_key)} chars) · "
+                f"model `{config.GEMINI_MODEL}`"
+            )
         else:
-            st.warning(
-                "Add free `GEMINI_API_KEY` in `.env` → "
-                "[aistudio.google.com/apikey](https://aistudio.google.com/apikey)"
+            st.error(
+                "**GEMINI_API_KEY not found in `.env`.**  \n"
+                "File must be: `rag-doc-qa/.env` (next to `app.py`).  \n"
+                "Line must be exactly: `GEMINI_API_KEY=AIza...`  \n"
+                "Then **restart** Streamlit (Ctrl+C → `streamlit run app.py`)."
             )
     elif provider == "xai":
-        if XAI_API_KEY:
+        if xai_key:
             st.warning("xAI key set — needs **credits** or falls back to extractive.")
         else:
             st.error("No XAI key — prefer free modes above.")
