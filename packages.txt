@@ -1,2 +1,0 @@
-# System packages for Streamlit Community Cloud (if needed).
-# Chroma + pypdf work without extra OS packages on current Cloud images.
