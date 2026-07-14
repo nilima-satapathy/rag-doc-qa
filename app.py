@@ -147,10 +147,6 @@ def main() -> None:
   <div style="font-size:1.45rem; font-weight:800; letter-spacing:-0.03em;">
     Settings
   </div>
-  <div style="
-    font-size:0.72rem; font-weight:650; letter-spacing:0.04em;
-    text-transform:uppercase; opacity:0.65; white-space:nowrap;
-  " title="Use « at the top of this panel to collapse">« collapse</div>
 </div>
             """,
             unsafe_allow_html=True,
@@ -174,10 +170,6 @@ def main() -> None:
         if new_theme != st.session_state.ui_theme:
             st.session_state.ui_theme = new_theme
             st.rerun()
-        st.markdown(
-            f'<p class="theme-hint">{THEMES[new_theme]["description"]}</p>',
-            unsafe_allow_html=True,
-        )
 
         st.markdown(
             '<p class="side-section-title">System</p>',

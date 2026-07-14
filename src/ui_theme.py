@@ -278,11 +278,20 @@ def build_css(theme_id: str) -> str:
   .stButton > button[kind="primary"] {{
     background: var(--primary) !important;
     border-color: var(--primary) !important;
-    color: #ffffff !important;
+    color: #0f172a !important;
   }}
   .stButton > button[kind="primary"]:hover {{
     background: var(--primary-hover) !important;
     border-color: var(--primary-hover) !important;
+    color: #0f172a !important;
+  }}
+  section[data-testid="stSidebar"] .stButton > button[kind="primary"] {{
+    color: #0f172a !important;
+  }}
+  section[data-testid="stSidebar"] .stButton > button[kind="primary"] p,
+  section[data-testid="stSidebar"] .stButton > button[kind="primary"] span,
+  section[data-testid="stSidebar"] .stButton > button[kind="primary"] div {{
+    color: #0f172a !important;
   }}
 
   /* Chat messages */
@@ -673,6 +682,50 @@ def build_css(theme_id: str) -> str:
     color: var(--primary) !important;
     line-height: 1 !important;
     display: block !important;
+  }}
+  /* Tooltip on collapse / expand controls */
+  section[data-testid="stSidebar"] button[kind="headerNoPadding"],
+  section[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"],
+  section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
+  [data-testid="stSidebarCollapseButton"] button {{
+    position: relative !important;
+  }}
+  section[data-testid="stSidebar"] button[kind="headerNoPadding"]:hover::after,
+  section[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"]:hover::after,
+  section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]:hover::after,
+  [data-testid="stSidebarCollapseButton"] button:hover::after {{
+    content: "Collapse" !important;
+    position: absolute !important;
+    top: 110% !important;
+    right: 0 !important;
+    white-space: nowrap !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    color: var(--text) !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 0.35rem 0.55rem !important;
+    z-index: 1000001 !important;
+    box-shadow: var(--shadow) !important;
+  }}
+  [data-testid="collapsedControl"] button:hover::after,
+  [data-testid="stSidebarCollapsedControl"] button:hover::after {{
+    content: "Expand" !important;
+    position: absolute !important;
+    top: 110% !important;
+    left: 0 !important;
+    white-space: nowrap !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--text) !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 0.35rem 0.55rem !important;
+    z-index: 1000001 !important;
+    box-shadow: var(--shadow) !important;
   }}
 </style>
 """
