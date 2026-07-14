@@ -57,7 +57,7 @@ def chat_completion(
         return _chat_gemini(
             system=system,
             user=user,
-            model=model or GEMINI_MODEL or LLM_MODEL or "gemini-2.0-flash",
+            model=model or GEMINI_MODEL or LLM_MODEL or "gemini-1.5-flash",
             temperature=temperature,
         )
 
@@ -163,11 +163,18 @@ def _chat_gemini(
             generation_config={"temperature": temperature},
         )
     except Exception as exc:  # noqa: BLE001
-        raise RuntimeError(
-            f"Gemini API error: {exc}\n"
-            "Check key at https://aistudio.google.com/apikey "
-            "and try GEMINI_MODEL=gemini-1.5-flash"
-        ) from exc
+        msg = str(exc)
+        extra = ""
+        if "429" in msg or "quota" in msg.lower() or "limit: 0" in msg:
+            extra = (
+                "\n\nThis is a QUOTA issue (not a wrong key).\n"
+                "Try in .env:\n"
+                "  GEMINI_MODEL=gemini-1.5-flash\n"
+                "  or GEMINI_MODEL=gemini-2.0-flash-lite\n"
+                "Or wait for free-tier reset, or use Answer mode: extractive (always free).\n"
+                "Docs: https://ai.google.dev/gemini-api/docs/rate-limits"
+            )
+        raise RuntimeError(f"Gemini API error: {exc}{extra}") from exc
 
     text = getattr(resp, "text", None)
     if not text:

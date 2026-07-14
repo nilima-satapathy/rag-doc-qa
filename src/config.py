@@ -84,7 +84,9 @@ XAI_API_KEY = get_xai_api_key()
 XAI_BASE_URL = _env("XAI_BASE_URL", "https://api.x.ai/v1")
 OLLAMA_BASE_URL, OLLAMA_MODEL = get_ollama_settings()
 GEMINI_API_KEY = get_gemini_api_key()
-GEMINI_MODEL = _env("GEMINI_MODEL", "gemini-2.0-flash")
+# Prefer 1.5-flash: free-tier friendly. 2.0-flash often shows limit:0 in some regions.
+GEMINI_MODEL = _env("GEMINI_MODEL", "gemini-1.5-flash")
+
 
 _default_models = {
     "xai": "grok-4.5",
