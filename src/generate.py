@@ -40,6 +40,8 @@ class AnswerResult:
     hits: list[SearchHit] = field(default_factory=list)
     used_llm: bool = False
     weak_retrieval: bool = False
+    used_extractive_fallback: bool = False
+    note: str | None = None
 
 
 def _snippet(text: str, max_len: int = 180) -> str:
@@ -58,6 +60,25 @@ def _build_context_block(hits: list[SearchHit]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
+def _extractive_answer(hits: list[SearchHit]) -> str:
+    """
+    Fallback when the LLM API is unavailable (e.g. no xAI credits).
+
+    Returns the best retrieved passage(s) so the app stays usable for demos.
+    """
+    best = hits[0]
+    body = best.text.strip()
+    if len(body) > 900:
+        body = body[:897] + "..."
+    sources = ", ".join(sorted({h.source_file for h in hits[:3]}))
+    return (
+        "**Retrieved from your documents** (LLM unavailable — showing best matching text):\n\n"
+        f"{body}\n\n"
+        f"Sources: {sources}\n\n"
+        "_Tip: Add credits at https://console.x.ai to enable full Grok answers._"
+    )
+
+
 def answer_question(
     question: str,
     *,
@@ -65,7 +86,10 @@ def answer_question(
     max_distance: float = MAX_DISTANCE,
 ) -> AnswerResult:
     """
-    Full M3 pipeline: search → (optional) LLM → answer + citations.
+    Full M3 pipeline: search → LLM → answer + citations.
+
+    If the LLM call fails (no credits, network, missing key), falls back to
+    extractive snippets from retrieval so the UI still works.
     """
     question = (question or "").strip()
     if not question:
@@ -105,15 +129,28 @@ def answer_question(
         "Answer the question using only the context."
     )
 
-    answer = chat_completion(system=SYSTEM_PROMPT, user=user_msg)
-    return AnswerResult(
-        question=question,
-        answer=answer,
-        citations=citations,
-        hits=hits,
-        used_llm=True,
-        weak_retrieval=False,
-    )
+    try:
+        answer = chat_completion(system=SYSTEM_PROMPT, user=user_msg)
+        return AnswerResult(
+            question=question,
+            answer=answer,
+            citations=citations,
+            hits=hits,
+            used_llm=True,
+            weak_retrieval=False,
+        )
+    except Exception as exc:  # noqa: BLE001 — keep UI working without credits
+        return AnswerResult(
+            question=question,
+            answer=_extractive_answer(hits),
+            citations=citations,
+            hits=hits,
+            used_llm=False,
+            weak_retrieval=False,
+            used_extractive_fallback=True,
+            note=str(exc)[:400],
+        )
+
 
 
 def format_answer(result: AnswerResult) -> str:
@@ -136,7 +173,10 @@ def format_answer(result: AnswerResult) -> str:
         lines.append(f"      {c.snippet}")
     lines.append("-" * 60)
     lines.append(
-        f"used_llm={result.used_llm}  weak_retrieval={result.weak_retrieval}"
+        f"used_llm={result.used_llm}  weak_retrieval={result.weak_retrieval}  "
+        f"extractive_fallback={result.used_extractive_fallback}"
     )
+    if result.note:
+        lines.append(f"note: {result.note}")
     lines.append("=" * 60)
     return "\n".join(lines)

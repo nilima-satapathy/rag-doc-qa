@@ -185,13 +185,20 @@ def main() -> None:
                 )
                 return
 
+        if result.used_extractive_fallback:
+            st.warning(
+                "LLM (Grok) is unavailable — usually **no xAI credits**. "
+                "Showing the best matching text from your PDFs instead. "
+                "Add credits at [console.x.ai](https://console.x.ai) for full answers."
+            )
         st.markdown(result.answer)
         render_citations(result.citations)
         meta = (
             f"used_llm={result.used_llm} · weak_retrieval={result.weak_retrieval} · "
-            f"top_k={top_k}"
+            f"extractive_fallback={result.used_extractive_fallback} · top_k={top_k}"
         )
         st.caption(meta)
+
 
         st.session_state.messages.append(
             {
