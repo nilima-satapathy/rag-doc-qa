@@ -382,8 +382,8 @@ Upload or index PDFs, ask questions in natural language, and get answers grounde
                     st.rerun()
 
     for msg in st.session_state.messages:
-        avatar = "◉" if msg["role"] == "user" else "◆"
-        with st.chat_message(msg["role"], avatar=avatar):
+        # Default avatars only — custom glyphs break on Streamlit Cloud
+        with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if msg.get("citations"):
                 render_citations(msg["citations"])
@@ -397,10 +397,10 @@ Upload or index PDFs, ask questions in natural language, and get answers grounde
         return
 
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="◉"):
+    with st.chat_message("user"):
         st.markdown(prompt)
 
-    with st.chat_message("assistant", avatar="◆"):
+    with st.chat_message("assistant"):
         if not ok and count == 0:
             err = "Index not ready. Use **Rebuild index** in the sidebar, then retry."
             st.error(err)
