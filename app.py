@@ -131,18 +131,7 @@ def main() -> None:
 
     # ---------- Sidebar ----------
     with st.sidebar:
-        st.markdown(
-            """
-<div class="side-brand">
-  <div class="mark">◆</div>
-  <div>
-    <div class="name">DocQ</div>
-    <div class="role">RAG · Portfolio demo</div>
-  </div>
-</div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown("### Settings")
 
         st.markdown(
             '<p class="side-section-title">Appearance</p>',
@@ -156,6 +145,7 @@ def main() -> None:
             format_func=lambda k: options_map[k],
             index=theme_index,
             label_visibility="collapsed",
+            key="theme_select",
         )
         if new_theme != st.session_state.ui_theme:
             st.session_state.ui_theme = new_theme
@@ -179,11 +169,16 @@ def main() -> None:
             unsafe_allow_html=True,
         )
         if pdfs:
-            for p in pdfs:
-                st.markdown(
-                    f'<div class="doc-pill">{p.name}</div>',
-                    unsafe_allow_html=True,
-                )
+            pdf_names = [p.name for p in pdfs]
+            st.selectbox(
+                "Knowledge base",
+                options=pdf_names,
+                index=0,
+                label_visibility="collapsed",
+                key="kb_select",
+                help="PDFs currently indexed from the data/ folder.",
+            )
+            st.caption(f"{len(pdf_names)} document(s) available")
         else:
             st.info("No PDFs in data/")
 
