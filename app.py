@@ -50,6 +50,9 @@ st.set_page_config(
     page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded",
+    menu_items={
+        "About": "DocQ — RAG document Q&A by Nilima Satapathy",
+    },
 )
 
 
@@ -240,19 +243,47 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
-    # ---------- Main ----------
-    status_class = "status-pill" if ok else "status-pill warn"
+    # ---------- Main site header (inline styles so Streamlit cannot override) ----------
+    pill_bg = "rgba(62, 207, 142, 0.14)" if ok else "rgba(232, 179, 57, 0.14)"
+    pill_color = "#3ecf8e" if ok else "#e8b339"
     st.markdown(
         f"""
-<div class="app-topbar">
-  <div class="app-logo">
-    <div class="app-logo-text">
-      <div class="title docq-name" role="heading" aria-level="1">Doc<span class="brand-accent">Q</span></div>
-      <div class="domain">docq.app · document Q&amp;A</div>
-      <div class="sub">Your documents, searchable answers — every reply includes sources</div>
+<div style="
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:20px; margin:0 0 1.4rem 0; padding:0.25rem 0 1.2rem 0;
+  border-bottom:1px solid rgba(128,128,128,0.25);
+">
+  <div>
+    <div role="heading" aria-level="1" style="
+      margin:0; padding:0;
+      font-size:3.6rem; font-weight:800; line-height:1.05;
+      letter-spacing:-0.06em; font-family:DM Sans, Segoe UI, system-ui, sans-serif;
+    ">
+      <span style="color:inherit;">Doc</span><span style="color:#6d7cff;">Q</span>
     </div>
+    <div style="
+      margin-top:0.35rem; font-size:1rem; font-weight:650;
+      letter-spacing:0.06em; text-transform:lowercase;
+      color:#6d7cff; font-family:JetBrains Mono, Consolas, monospace;
+    ">docq.app · document Q&amp;A</div>
+    <div style="
+      margin-top:0.45rem; font-size:1.15rem; font-weight:500;
+      line-height:1.45; max-width:36rem; opacity:0.85;
+      font-family:DM Sans, Segoe UI, system-ui, sans-serif;
+    ">Your documents, searchable answers — every reply includes sources</div>
   </div>
-  <div class="{status_class}"><span class="dot"></span>{status_msg}</div>
+  <div style="
+    display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
+    font-size:0.9rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    color:{pill_color}; background:{pill_bg}; border:1px solid {pill_color}55;
+    border-radius:999px; padding:0.5rem 0.95rem; margin-top:0.35rem;
+  ">
+    <span style="
+      width:8px; height:8px; border-radius:50%; background:{pill_color};
+      box-shadow:0 0 0 3px {pill_color}33; display:inline-block;
+    "></span>
+    {status_msg}
+  </div>
 </div>
         """,
         unsafe_allow_html=True,

@@ -152,33 +152,50 @@ def build_css(theme_id: str) -> str:
     background: linear-gradient(165deg, var(--bg) 0%, var(--bg-mid) 50%, var(--bg-end) 100%) !important;
     color: var(--text) !important;
     font-family: var(--font) !important;
-    font-size: var(--fs-base) !important;
+    font-size: 18px !important;
   }}
 
-  /* Global text size bump across Streamlit widgets */
-  .stApp p, .stApp span, .stApp label, .stApp li,
-  .stMarkdown, .stCaption, [data-testid="stMarkdownContainer"],
-  [data-testid="stWidgetLabel"] p, [data-testid="stChatMessageContent"] {{
-    font-size: 1.05rem !important;
+  /* Force larger type across the whole app (high specificity) */
+  .stApp, .stApp * {{
+    font-size: inherit;
+  }}
+  section[data-testid="stSidebar"] p,
+  section[data-testid="stSidebar"] span,
+  section[data-testid="stSidebar"] label,
+  section[data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p,
+  section.main p,
+  section.main span,
+  section.main label,
+  section.main li,
+  section.main div[data-testid="stMarkdownContainer"] p,
+  section.main div[data-testid="stChatMessageContent"] p,
+  section.main div[data-testid="stChatMessageContent"] li {{
+    font-size: 1.12rem !important;
     line-height: 1.55 !important;
   }}
-  .stCaption, [data-testid="stCaption"] {{
-    font-size: 0.95rem !important;
-  }}
-  .stButton > button {{
+  section.main div[data-testid="stCaptionContainer"] p,
+  section[data-testid="stSidebar"] .stCaption {{
     font-size: 1rem !important;
-    padding: 0.55rem 1rem !important;
   }}
-  .stSlider label p, .stSelectbox label p {{
-    font-size: 1rem !important;
+  section.main .stButton > button,
+  section[data-testid="stSidebar"] .stButton > button {{
+    font-size: 1.08rem !important;
+    padding: 0.6rem 1.05rem !important;
+    min-height: 2.75rem !important;
+  }}
+  section[data-testid="stSidebar"] h3 {{
+    font-size: 1.5rem !important;
   }}
   div[data-baseweb="select"] > div {{
-    font-size: 1rem !important;
-    min-height: 2.6rem !important;
-  }}
-  [data-testid="stChatInput"] textarea,
-  [data-testid="stChatInput"] input {{
     font-size: 1.08rem !important;
+    min-height: 2.85rem !important;
+  }}
+  [data-testid="stChatInput"] textarea {{
+    font-size: 1.15rem !important;
+    line-height: 1.5 !important;
+  }}
+  [data-testid="stExpander"] summary {{
+    font-size: 1.12rem !important;
   }}
 
   .main .block-container {{
