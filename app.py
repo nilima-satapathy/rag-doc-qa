@@ -21,7 +21,9 @@ from src.config import (
     CHROMA_DIR,
     COLLECTION_NAME,
     DATA_DIR,
+    GEMINI_API_KEY,
     LLM_MODEL,
+    LLM_PROVIDER,
     MAX_DISTANCE,
     TOP_K,
     XAI_API_KEY,
@@ -67,8 +69,8 @@ def render_citations(citations: list) -> None:
 def main() -> None:
     st.title("📄 RAG Document Q&A")
     st.caption(
-        "Ask questions about your PDFs. Answers use retrieved context only "
-        "(Project 3 · M4 Streamlit UI)."
+        "Ask questions about your PDFs. Free by default (extractive mode). "
+        "Optional free LLMs: Ollama or Gemini · paid: xAI Grok."
     )
 
     # ----- Sidebar -----
@@ -113,20 +115,53 @@ def main() -> None:
                     st.error(f"Index failed: {exc}")
 
         st.divider()
-        st.subheader("LLM")
-        if XAI_API_KEY:
-            st.success(f"API key loaded · model `{LLM_MODEL}`")
-        else:
-            st.error(
-                "No `XAI_API_KEY`. Add it to `.env` and add credits at "
-                "[console.x.ai](https://console.x.ai)."
+        st.subheader("Answer mode (free options)")
+        provider_labels = {
+            "extractive": "Free — extractive (PDF text only, no API)",
+            "ollama": "Free — Ollama (local LLM)",
+            "gemini": "Free tier — Google Gemini API",
+            "xai": "Paid — xAI Grok (needs credits)",
+        }
+        options = list(provider_labels.keys())
+        default_idx = options.index(LLM_PROVIDER) if LLM_PROVIDER in options else 0
+        provider = st.selectbox(
+            "Provider",
+            options=options,
+            format_func=lambda k: provider_labels[k],
+            index=default_idx,
+            help="Extractive needs no key. Gemini: free key from Google AI Studio. "
+            "Ollama: install locally. xAI needs paid credits.",
+        )
+
+        if provider == "extractive":
+            st.success("Using **free extractive** mode — no credits needed.")
+        elif provider == "ollama":
+            st.info(
+                "Requires [Ollama](https://ollama.com) running + "
+                "`ollama pull llama3.2` (or set `OLLAMA_MODEL`)."
             )
+        elif provider == "gemini":
+            if GEMINI_API_KEY:
+                st.success(f"Gemini key loaded · model `{LLM_MODEL}`")
+            else:
+                st.warning(
+                    "Add free `GEMINI_API_KEY` in `.env` from "
+                    "[aistudio.google.com/apikey](https://aistudio.google.com/apikey)"
+                )
+        elif provider == "xai":
+            if XAI_API_KEY:
+                st.warning(
+                    f"xAI key present · model `{LLM_MODEL}` — **team needs credits** "
+                    "or you'll fall back to extractive."
+                )
+            else:
+                st.error("No `XAI_API_KEY` in `.env`. Prefer free modes above.")
 
         if st.button("Clear chat", use_container_width=True):
             st.session_state.messages = []
             st.rerun()
 
-        st.caption("Local demo · not multi-user · secrets stay in `.env`")
+        st.caption("Local demo · secrets stay in `.env` · never commit keys")
 
     # ----- Chat state -----
     if "messages" not in st.session_state:
@@ -167,15 +202,13 @@ def main() -> None:
             st.session_state.messages.append({"role": "assistant", "content": err})
             return
 
-        if not XAI_API_KEY:
-            # Still allow weak-retrieval path without key for "I don't know" cases,
-            # but most answers need the LLM.
-            st.warning("API key missing — only weak-retrieval fallback may work.")
-
         with st.spinner("Retrieving context and generating answer…"):
             try:
                 result = answer_question(
-                    prompt, top_k=top_k, max_distance=max_distance
+                    prompt,
+                    top_k=top_k,
+                    max_distance=max_distance,
+                    provider=provider,
                 )
             except Exception as exc:  # noqa: BLE001
                 err = f"Could not answer: {exc}"
@@ -185,17 +218,18 @@ def main() -> None:
                 )
                 return
 
-        if result.used_extractive_fallback:
+        if result.used_extractive_fallback and result.provider != "extractive":
             st.warning(
-                "LLM (Grok) is unavailable — usually **no xAI credits**. "
-                "Showing the best matching text from your PDFs instead. "
-                "Add credits at [console.x.ai](https://console.x.ai) for full answers."
+                f"LLM provider **{result.provider}** failed — showing document text instead. "
+                f"{result.note or ''}"
             )
+        elif result.provider == "extractive":
+            st.info("Free **extractive** mode: answer is the best matching PDF passage.")
         st.markdown(result.answer)
         render_citations(result.citations)
         meta = (
-            f"used_llm={result.used_llm} · weak_retrieval={result.weak_retrieval} · "
-            f"extractive_fallback={result.used_extractive_fallback} · top_k={top_k}"
+            f"provider={result.provider} · used_llm={result.used_llm} · "
+            f"weak_retrieval={result.weak_retrieval} · top_k={top_k}"
         )
         st.caption(meta)
 

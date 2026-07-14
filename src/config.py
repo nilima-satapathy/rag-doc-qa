@@ -1,9 +1,11 @@
 """
 Shared settings for the RAG pipeline.
 
-M1: chunk size / overlap
-M2: Chroma path, collection name, top_k
-M3: LLM (SpaceXAI / xAI) + weak-retrieval threshold
+LLM providers (free options available):
+  extractive — no LLM, show best matching PDF text (100% free, default)
+  ollama     — free local models (install Ollama + pull a model)
+  gemini     — Google AI Studio free API key
+  xai        — SpaceXAI / Grok (needs paid credits)
 """
 
 from __future__ import annotations
@@ -11,7 +13,6 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Load .env if present (never commit real .env)
 try:
     from dotenv import load_dotenv
 
@@ -19,7 +20,6 @@ try:
 except ImportError:
     pass
 
-# Project root = parent of src/
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(os.getenv("RAG_DATA_DIR", ROOT / "data"))
 
@@ -40,12 +40,30 @@ TOP_K = int(os.getenv("RAG_TOP_K", "3"))
 if TOP_K < 1:
     raise ValueError("RAG_TOP_K must be >= 1")
 
-# --- LLM (M3) — SpaceXAI via xAI OpenAI-compatible API ---
+# --- LLM provider (M3+) ---
+# extractive | ollama | gemini | xai
+LLM_PROVIDER = os.getenv("RAG_LLM_PROVIDER", "extractive").strip().lower()
+
+# xAI / SpaceXAI (paid credits)
 XAI_API_KEY = os.getenv("XAI_API_KEY", "")
 XAI_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
-# Default chat model (override with RAG_LLM_MODEL if needed)
-LLM_MODEL = os.getenv("RAG_LLM_MODEL", "grok-4.5")
 
-# If the best chunk distance is worse than this, treat retrieval as too weak
-# (Chroma cosine distance: lower is better; good hits in our demos were ~0.6–0.8)
+# Ollama (free, local) — https://ollama.com
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+
+# Google Gemini free tier — https://aistudio.google.com/apikey
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+
+# Default model name depends on provider (override with RAG_LLM_MODEL)
+_default_models = {
+    "xai": "grok-4.5",
+    "ollama": OLLAMA_MODEL,
+    "gemini": GEMINI_MODEL,
+    "extractive": "none",
+}
+LLM_MODEL = os.getenv("RAG_LLM_MODEL", _default_models.get(LLM_PROVIDER, "none"))
+
+# Weak retrieval cutoff
 MAX_DISTANCE = float(os.getenv("RAG_MAX_DISTANCE", "1.05"))

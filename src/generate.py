@@ -1,14 +1,18 @@
 """
-Generate: retrieve context → LLM answer grounded in sources + citations.
+Generate: retrieve context → answer + citations.
 
-Milestone 3.
+LLM modes (config RAG_LLM_PROVIDER):
+  extractive — free: return best matching PDF text
+  ollama     — free local generative model
+  gemini     — free Google API key
+  xai        — Grok (paid credits)
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from src.config import MAX_DISTANCE, TOP_K
+from src.config import LLM_PROVIDER, MAX_DISTANCE, TOP_K
 from src.llm_client import chat_completion
 from src.retrieve import SearchHit, search
 
@@ -41,6 +45,7 @@ class AnswerResult:
     used_llm: bool = False
     weak_retrieval: bool = False
     used_extractive_fallback: bool = False
+    provider: str = "extractive"
     note: str | None = None
 
 
@@ -60,23 +65,28 @@ def _build_context_block(hits: list[SearchHit]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
-def _extractive_answer(hits: list[SearchHit]) -> str:
-    """
-    Fallback when the LLM API is unavailable (e.g. no xAI credits).
-
-    Returns the best retrieved passage(s) so the app stays usable for demos.
-    """
+def _extractive_answer(hits: list[SearchHit], *, intentional: bool) -> str:
     best = hits[0]
     body = best.text.strip()
     if len(body) > 900:
         body = body[:897] + "..."
     sources = ", ".join(sorted({h.source_file for h in hits[:3]}))
-    return (
-        "**Retrieved from your documents** (LLM unavailable — showing best matching text):\n\n"
-        f"{body}\n\n"
-        f"Sources: {sources}\n\n"
-        "_Tip: Add credits at https://console.x.ai to enable full Grok answers._"
-    )
+    if intentional:
+        header = "**Answer from your documents** (free extractive mode — no paid API):\n\n"
+        footer = (
+            "\n\n_Want natural chat-style answers for free? "
+            "Set `RAG_LLM_PROVIDER=ollama` or `gemini` in `.env`._"
+        )
+    else:
+        header = (
+            "**Retrieved from your documents** "
+            "(LLM unavailable — showing best matching text):\n\n"
+        )
+        footer = (
+            "\n\n_Tip: Use free `extractive` / `ollama` / `gemini`, "
+            "or add xAI credits for Grok._"
+        )
+    return f"{header}{body}\n\nSources: {sources}{footer}"
 
 
 def answer_question(
@@ -84,16 +94,16 @@ def answer_question(
     *,
     top_k: int = TOP_K,
     max_distance: float = MAX_DISTANCE,
+    provider: str | None = None,
 ) -> AnswerResult:
     """
-    Full M3 pipeline: search → LLM → answer + citations.
-
-    If the LLM call fails (no credits, network, missing key), falls back to
-    extractive snippets from retrieval so the UI still works.
+    RAG pipeline: search → answer (extractive or LLM) + citations.
     """
     question = (question or "").strip()
     if not question:
         raise ValueError("question must not be empty")
+
+    prov = (provider or LLM_PROVIDER).strip().lower()
 
     hits = search(question, top_k=top_k)
     citations = [
@@ -120,6 +130,20 @@ def answer_question(
             hits=hits,
             used_llm=False,
             weak_retrieval=True,
+            provider=prov,
+        )
+
+    # Free / intentional extractive mode
+    if prov == "extractive":
+        return AnswerResult(
+            question=question,
+            answer=_extractive_answer(hits, intentional=True),
+            citations=citations,
+            hits=hits,
+            used_llm=False,
+            weak_retrieval=False,
+            used_extractive_fallback=True,
+            provider="extractive",
         )
 
     context = _build_context_block(hits)
@@ -130,7 +154,9 @@ def answer_question(
     )
 
     try:
-        answer = chat_completion(system=SYSTEM_PROMPT, user=user_msg)
+        answer = chat_completion(
+            system=SYSTEM_PROMPT, user=user_msg, provider=prov
+        )
         return AnswerResult(
             question=question,
             answer=answer,
@@ -138,23 +164,23 @@ def answer_question(
             hits=hits,
             used_llm=True,
             weak_retrieval=False,
+            provider=prov,
         )
-    except Exception as exc:  # noqa: BLE001 — keep UI working without credits
+    except Exception as exc:  # noqa: BLE001
         return AnswerResult(
             question=question,
-            answer=_extractive_answer(hits),
+            answer=_extractive_answer(hits, intentional=False),
             citations=citations,
             hits=hits,
             used_llm=False,
             weak_retrieval=False,
             used_extractive_fallback=True,
+            provider=prov,
             note=str(exc)[:400],
         )
 
 
-
 def format_answer(result: AnswerResult) -> str:
-    """Pretty terminal output."""
     lines = [
         "=" * 60,
         f"Q: {result.question}",
@@ -173,8 +199,9 @@ def format_answer(result: AnswerResult) -> str:
         lines.append(f"      {c.snippet}")
     lines.append("-" * 60)
     lines.append(
-        f"used_llm={result.used_llm}  weak_retrieval={result.weak_retrieval}  "
-        f"extractive_fallback={result.used_extractive_fallback}"
+        f"provider={result.provider}  used_llm={result.used_llm}  "
+        f"weak_retrieval={result.weak_retrieval}  "
+        f"extractive={result.used_extractive_fallback}"
     )
     if result.note:
         lines.append(f"note: {result.note}")
