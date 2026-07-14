@@ -248,7 +248,7 @@ def main() -> None:
   <div class="app-logo">
     <div class="app-logo-mark">◆</div>
     <div class="app-logo-text">
-      <div class="title docq-name">DocQ</div>
+      <h1 class="title docq-name">DocQ</h1>
       <div class="sub">Ask your documents — with sources</div>
     </div>
   </div>

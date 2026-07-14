@@ -294,20 +294,26 @@ def build_css(theme_id: str) -> str:
     line-height: 1.2;
   }}
   .app-logo-text .title.docq-name {{
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    background: linear-gradient(105deg, var(--text) 0%, var(--primary) 85%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: var(--primary);
+    font-size: 2.15rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.045em !important;
+    line-height: 1.1 !important;
+    color: var(--primary) !important;
+    -webkit-text-fill-color: var(--primary) !important;
+    background: none !important;
   }}
   .app-logo-text .sub {{
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     color: var(--muted);
     font-weight: 500;
     letter-spacing: 0.01em;
+    margin-top: 0.2rem;
+  }}
+  .app-logo-mark {{
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 22px !important;
+    border-radius: 13px !important;
   }}
   /* About expander polish */
   div[data-testid="stExpander"] {{
