@@ -17,20 +17,21 @@ if str(ROOT) not in sys.path:
 
 import streamlit as st
 
-from src.config import (
-    CHROMA_DIR,
-    COLLECTION_NAME,
-    DATA_DIR,
-    GEMINI_API_KEY,
-    LLM_MODEL,
-    LLM_PROVIDER,
-    MAX_DISTANCE,
-    TOP_K,
-    XAI_API_KEY,
-)
+import src.config as config
 from src.generate import answer_question
 from src.ingest import list_pdfs
 from src.retrieve import build_index, get_client
+
+# Read settings from module (avoids stale partial imports)
+CHROMA_DIR = config.CHROMA_DIR
+COLLECTION_NAME = config.COLLECTION_NAME
+DATA_DIR = config.DATA_DIR
+LLM_MODEL = config.LLM_MODEL
+LLM_PROVIDER = config.LLM_PROVIDER
+MAX_DISTANCE = config.MAX_DISTANCE
+TOP_K = config.TOP_K
+XAI_API_KEY = getattr(config, "XAI_API_KEY", "") or ""
+GEMINI_API_KEY = getattr(config, "GEMINI_API_KEY", "") or ""
 
 
 st.set_page_config(
