@@ -603,6 +603,22 @@ def build_css(theme_id: str) -> str:
 
   footer {{ visibility: hidden; }}
   #MainMenu {{ visibility: hidden; }}
-  [data-testid="stToolbar"] {{ display: none !important; }}
+  /* Keep deploy toolbar hidden, but NEVER hide sidebar expand/collapse */
+  [data-testid="stToolbar"] {{
+    right: 1rem !important;
+  }}
+  /* Expand control when sidebar is collapsed (top-left chevron) */
+  [data-testid="collapsedControl"],
+  [data-testid="stSidebarCollapsedControl"] {{
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 999 !important;
+  }}
+  /* Collapse control on open sidebar */
+  [data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"],
+  section[data-testid="stSidebar"] button[kind="header"] {{
+    visibility: visible !important;
+  }}
 </style>
 """

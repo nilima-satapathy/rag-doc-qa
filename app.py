@@ -49,6 +49,7 @@ st.set_page_config(
     page_title="DocQ — Document Q&A",
     page_icon="📄",
     layout="wide",
+    # Left Settings panel starts open; user can collapse/expand anytime
     initial_sidebar_state="expanded",
     menu_items={
         "About": "DocQ — RAG document Q&A by Nilima Satapathy",
@@ -132,14 +133,25 @@ def main() -> None:
     pdfs = list_pdfs(DATA_DIR)
     options_map = theme_options()
 
-    # ---------- Sidebar ----------
+    # ---------- Left Settings panel (Streamlit collapsible sidebar) ----------
+    # Collapse/expand with the « / » control on the panel edge or top-left when closed.
     with st.sidebar:
-        st.markdown("### Settings")
+        st.markdown(
+            """
+<div style="
+  font-size:1.45rem; font-weight:800; letter-spacing:-0.03em;
+  margin:0 0 0.85rem 0; padding-bottom:0.65rem;
+  border-bottom:1px solid rgba(128,128,128,0.25);
+">Settings</div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         st.markdown(
             '<p class="side-section-title">Appearance</p>',
             unsafe_allow_html=True,
         )
+
         theme_keys = list(options_map.keys())
         theme_index = theme_keys.index(theme_id) if theme_id in theme_keys else 0
         new_theme = st.selectbox(
