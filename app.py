@@ -46,8 +46,8 @@ PROVIDER_LABELS = {
 
 
 st.set_page_config(
-    page_title="DocQ · RAG Portfolio",
-    page_icon="◆",
+    page_title="DocQ — Document Q&A",
+    page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -248,8 +248,8 @@ def main() -> None:
   <div class="app-logo">
     <div class="app-logo-text">
       <div class="title docq-name" role="heading" aria-level="1">Doc<span class="brand-accent">Q</span></div>
-      <div class="domain">docq · document intelligence</div>
-      <div class="sub">Ask your documents — answers with sources you can verify</div>
+      <div class="domain">docq.app · document Q&amp;A</div>
+      <div class="sub">Your documents, searchable answers — every reply includes sources</div>
     </div>
   </div>
   <div class="{status_class}"><span class="dot"></span>{status_msg}</div>

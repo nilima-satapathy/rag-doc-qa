@@ -142,18 +142,49 @@ def build_css(theme_id: str) -> str:
     --radius: {r};
     --font: "DM Sans", "Segoe UI", system-ui, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, monospace;
+    --fs-base: 17px;
+    --fs-sm: 0.95rem;
+    --fs-md: 1.05rem;
+    --fs-lg: 1.15rem;
   }}
 
   html, body, [data-testid="stAppViewContainer"], .stApp {{
     background: linear-gradient(165deg, var(--bg) 0%, var(--bg-mid) 50%, var(--bg-end) 100%) !important;
     color: var(--text) !important;
     font-family: var(--font) !important;
+    font-size: var(--fs-base) !important;
+  }}
+
+  /* Global text size bump across Streamlit widgets */
+  .stApp p, .stApp span, .stApp label, .stApp li,
+  .stMarkdown, .stCaption, [data-testid="stMarkdownContainer"],
+  [data-testid="stWidgetLabel"] p, [data-testid="stChatMessageContent"] {{
+    font-size: 1.05rem !important;
+    line-height: 1.55 !important;
+  }}
+  .stCaption, [data-testid="stCaption"] {{
+    font-size: 0.95rem !important;
+  }}
+  .stButton > button {{
+    font-size: 1rem !important;
+    padding: 0.55rem 1rem !important;
+  }}
+  .stSlider label p, .stSelectbox label p {{
+    font-size: 1rem !important;
+  }}
+  div[data-baseweb="select"] > div {{
+    font-size: 1rem !important;
+    min-height: 2.6rem !important;
+  }}
+  [data-testid="stChatInput"] textarea,
+  [data-testid="stChatInput"] input {{
+    font-size: 1.08rem !important;
   }}
 
   .main .block-container {{
-    padding-top: 1.4rem !important;
-    padding-bottom: 2rem !important;
-    max-width: 1100px !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 2.25rem !important;
+    max-width: 1120px !important;
   }}
 
   [data-testid="stHeader"] {{
@@ -257,13 +288,14 @@ def build_css(theme_id: str) -> str:
   }}
 
   /* ===== Custom components ===== */
+  /* ===== Site header / website title ===== */
   .app-topbar {{
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 1.25rem;
-    padding: 0.35rem 0 1.1rem 0;
+    gap: 20px;
+    margin-bottom: 1.35rem;
+    padding: 0.5rem 0 1.25rem 0;
     border-bottom: 1px solid var(--border-soft);
   }}
   .app-logo {{
@@ -275,18 +307,17 @@ def build_css(theme_id: str) -> str:
   .app-logo-text {{
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.2rem;
     width: 100%;
   }}
-  /* Website wordmark — primary brand */
-  .app-logo-text .title.docq-name,
-  h1.title.docq-name {{
+  /* DocQ = website title (no Streamlit link icon — not an h1) */
+  .app-logo-text .title.docq-name {{
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 3rem !important;
+    font-size: 3.4rem !important;
     font-weight: 800 !important;
-    letter-spacing: -0.055em !important;
-    line-height: 1.05 !important;
+    letter-spacing: -0.06em !important;
+    line-height: 1.02 !important;
     color: var(--text) !important;
     -webkit-text-fill-color: var(--text) !important;
     background: none !important;
@@ -296,23 +327,23 @@ def build_css(theme_id: str) -> str:
     color: var(--primary) !important;
     -webkit-text-fill-color: var(--primary) !important;
   }}
-  .app-logo-text .sub {{
-    font-size: 0.95rem;
-    color: var(--muted);
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    margin-top: 0.35rem;
-    max-width: 28rem;
-  }}
   .app-logo-text .domain {{
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: 0.95rem !important;
+    font-weight: 650;
+    letter-spacing: 0.06em;
     text-transform: lowercase;
     color: var(--primary);
-    opacity: 0.9;
-    margin-top: 0.15rem;
+    margin-top: 0.25rem;
     font-family: var(--mono);
+  }}
+  .app-logo-text .sub {{
+    font-size: 1.12rem !important;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: 0.4rem;
+    max-width: 34rem;
+    line-height: 1.45;
   }}
   /* About expander polish */
   div[data-testid="stExpander"] {{
@@ -330,7 +361,7 @@ def build_css(theme_id: str) -> str:
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     font-weight: 650;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -338,7 +369,8 @@ def build_css(theme_id: str) -> str:
     background: var(--success-soft);
     border: 1px solid rgba(62, 207, 142, 0.28);
     border-radius: 999px;
-    padding: 0.35rem 0.75rem;
+    padding: 0.45rem 0.9rem;
+    white-space: nowrap;
   }}
   .status-pill .dot {{
     width: 7px;
@@ -432,7 +464,7 @@ def build_css(theme_id: str) -> str:
     box-shadow: var(--shadow);
   }}
   .stat .label {{
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--faint);
@@ -440,7 +472,7 @@ def build_css(theme_id: str) -> str:
     font-weight: 700;
   }}
   .stat .value {{
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.02em;
@@ -509,7 +541,7 @@ def build_css(theme_id: str) -> str:
   }}
 
   .side-section-title {{
-    font-size: 0.68rem;
+    font-size: 0.8rem;
     font-weight: 750;
     text-transform: uppercase;
     letter-spacing: 0.09em;
@@ -522,14 +554,14 @@ def build_css(theme_id: str) -> str:
     border-radius: 8px;
     padding: 0.42rem 0.6rem;
     margin: 0.28rem 0;
-    font-size: 0.76rem;
+    font-size: 0.9rem;
     color: var(--text-2);
     font-family: var(--mono);
     word-break: break-all;
     letter-spacing: -0.02em;
   }}
   .theme-hint {{
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     color: var(--faint) !important;
     margin: 0.2rem 0 0.4rem 0;
     line-height: 1.4;
@@ -538,9 +570,18 @@ def build_css(theme_id: str) -> str:
     margin-top: 1rem;
     padding-top: 0.85rem;
     border-top: 1px solid var(--border-soft);
-    font-size: 0.72rem;
+    font-size: 0.88rem;
     color: var(--faint) !important;
     line-height: 1.45;
+  }}
+  [data-testid="stSidebar"] h3 {{
+    font-size: 1.35rem !important;
+  }}
+  .cite-card .meta {{
+    font-size: 0.88rem !important;
+  }}
+  .cite-card .snip {{
+    font-size: 0.95rem !important;
   }}
 
   footer {{ visibility: hidden; }}
