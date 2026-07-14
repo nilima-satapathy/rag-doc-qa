@@ -7,10 +7,9 @@
 | M3 | LLM answer with retrieved context + citations | Done | 2026-07-13 |
 | M4 | Streamlit chat UI | Done | 2026-07-14 |
 | M5 | Eval script on ≥10 questions | Done | 2026-07-14 |
-| M6 | Deploy + README polish + architecture diagram | Ready* | 2026-07-14 |
+| M6 | Deploy + README polish + architecture diagram | Done | 2026-07-14 |
 
-\*M6 code and docs are complete (auto-index cold start, secrets, diagram, deploy guide).  
-**Final step:** publish on [Streamlit Community Cloud](./docs/DEPLOY.md) and paste the live URL into `README.md`.
+**Live demo:** [https://rag-docq-qna.streamlit.app](https://rag-docq-qna.streamlit.app)
 
 ## M1 notes
 
@@ -41,4 +40,6 @@
 - Streamlit secrets support in `src/config.py`
 - `.streamlit/config.toml`, `runtime.txt`, `docs/DEPLOY.md`
 - Architecture: `diagrams/architecture.svg` + mermaid notes
-- README polish (demo placeholder, deploy table, layout)
+- README polish + live URL
+- Public app: https://rag-docq-qna.streamlit.app
+- Cloud fixes: empty/remove packages.txt comments; default chat avatars

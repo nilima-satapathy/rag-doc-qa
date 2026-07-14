@@ -12,8 +12,8 @@ Ask questions over **your PDFs** in a **browser chat**. The app retrieves releva
 
 | | |
 |---|---|
-| **Status** | **M1–M6 ready** — public deploy guide + architecture diagram |
-| **Live demo** | *Deploy once → paste URL here* (see [docs/DEPLOY.md](./docs/DEPLOY.md)) |
+| **Status** | **M1–M6 complete** — live on Streamlit Community Cloud |
+| **Live demo** | **[rag-docq-qna.streamlit.app](https://rag-docq-qna.streamlit.app)** |
 | **Stack** | Python · pypdf · Chroma · Streamlit · Gemini / Extractive / Ollama / xAI |
 | **Releases** | [tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
 
@@ -21,14 +21,9 @@ Ask questions over **your PDFs** in a **browser chat**. The app retrieves releva
 
 ## Live demo
 
-1. Follow **[Deploy on Streamlit Community Cloud](./docs/DEPLOY.md)** (~5 minutes).
-2. After the app is live, update this section with your URL, for example:
+**Try it:** [https://rag-docq-qna.streamlit.app](https://rag-docq-qna.streamlit.app)
 
-```text
-https://YOUR-APP-NAME.streamlit.app
-```
-
-Default answer mode is **extractive** (no API key). Optional free Gemini via Streamlit secrets.
+Default answer mode is **extractive** (no API key). Optional free Gemini via Streamlit **Manage app → Secrets** (see [docs/DEPLOY.md](./docs/DEPLOY.md)).
 
 ---
 
