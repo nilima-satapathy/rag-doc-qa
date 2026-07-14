@@ -57,7 +57,7 @@ def chat_completion(
         return _chat_gemini(
             system=system,
             user=user,
-            model=model or GEMINI_MODEL or LLM_MODEL or "gemini-1.5-flash",
+            model=model or GEMINI_MODEL or LLM_MODEL or "gemini-flash-lite-latest",
             temperature=temperature,
         )
 
@@ -169,8 +169,7 @@ def _chat_gemini(
             extra = (
                 "\n\nThis is a QUOTA issue (not a wrong key).\n"
                 "Try in .env:\n"
-                "  GEMINI_MODEL=gemini-1.5-flash\n"
-                "  or GEMINI_MODEL=gemini-2.0-flash-lite\n"
+                "  GEMINI_MODEL=gemini-flash-lite-latest\n"
                 "Or wait for free-tier reset, or use Answer mode: extractive (always free).\n"
                 "Docs: https://ai.google.dev/gemini-api/docs/rate-limits"
             )
