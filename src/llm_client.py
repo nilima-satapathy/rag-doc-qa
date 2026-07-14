@@ -163,19 +163,54 @@ def _chat_gemini(
             generation_config={"temperature": temperature},
         )
     except Exception as exc:  # noqa: BLE001
-        msg = str(exc)
-        extra = ""
-        if "429" in msg or "quota" in msg.lower() or "limit: 0" in msg:
-            extra = (
-                "\n\nThis is a QUOTA issue (not a wrong key).\n"
-                "Try in .env:\n"
-                "  GEMINI_MODEL=gemini-flash-lite-latest\n"
-                "Or wait for free-tier reset, or use Answer mode: extractive (always free).\n"
-                "Docs: https://ai.google.dev/gemini-api/docs/rate-limits"
-            )
-        raise RuntimeError(f"Gemini API error: {exc}{extra}") from exc
+        raise RuntimeError(_friendly_gemini_error(exc)) from exc
 
     text = getattr(resp, "text", None)
     if not text:
         raise RuntimeError("Gemini returned an empty response.")
     return text.strip()
+
+
+def _friendly_gemini_error(exc: BaseException) -> str:
+    """Short, actionable Gemini errors (no raw Google JSON dumps)."""
+    msg = str(exc)
+    low = msg.lower()
+
+    if (
+        "api_key_invalid" in low
+        or "api key not valid" in low
+        or "api key invalid" in low
+        or "invalid api key" in low
+        or "400" in msg
+        and "key" in low
+    ):
+        return (
+            "Gemini API key is invalid or expired.\n"
+            "Fix:\n"
+            "• Local: put a fresh key in `.env` as GEMINI_API_KEY=AIza...\n"
+            "• Streamlit Cloud: Manage app → Settings → Secrets, e.g.\n"
+            '  GEMINI_API_KEY = "AIza..."\n'
+            "  RAG_LLM_PROVIDER = \"gemini\"\n"
+            "• Create a key: https://aistudio.google.com/apikey\n"
+            "• Or switch Answer engine to Free · Extractive (no key needed)."
+        )
+
+    if "429" in msg or "quota" in low or "limit: 0" in low or "resource_exhausted" in low:
+        return (
+            "Gemini free-tier quota exceeded (not a wrong key).\n"
+            "Try GEMINI_MODEL=gemini-flash-lite-latest, wait for reset, "
+            "or use Answer engine: Free · Extractive."
+        )
+
+    if "permission" in low or "403" in msg:
+        return (
+            "Gemini denied this request (permission / API not enabled).\n"
+            "Check the key at https://aistudio.google.com/apikey "
+            "or use Free · Extractive."
+        )
+
+    # Keep short — avoid multi-line Google proto dumps in the UI
+    short = msg.replace("\n", " ").strip()
+    if len(short) > 220:
+        short = short[:217] + "..."
+    return f"Gemini API error: {short}"

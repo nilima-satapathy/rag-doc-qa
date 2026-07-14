@@ -83,8 +83,8 @@ def _extractive_answer(hits: list[SearchHit], *, intentional: bool) -> str:
             "(LLM unavailable — showing best matching text):\n\n"
         )
         footer = (
-            "\n\n_Tip: Use free `extractive` / `ollama` / `gemini`, "
-            "or add xAI credits for Grok._"
+            "\n\n_Tip: Switch Answer engine to **Free · Extractive**, "
+            "or fix your Gemini/xAI key (Cloud: Manage app → Secrets)._"
         )
     return f"{header}{body}\n\nSources: {sources}{footer}"
 

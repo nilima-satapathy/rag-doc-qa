@@ -121,10 +121,19 @@ def provider_status_message(provider: str) -> None:
         st.info("Requires local Ollama (`ollama pull llama3.2`).")
     elif provider == "gemini":
         if gemini_key:
-            st.success(f"Gemini connected · `{config.GEMINI_MODEL}`")
+            # Presence ≠ valid — Google only validates on the first request
+            st.info(
+                f"Gemini key present · model `{config.GEMINI_MODEL}`  \n"
+                "If answers fall back to extractive, the key is invalid — "
+                "update **Secrets** (Cloud) or `.env` (local).  \n"
+                "[Get free key](https://aistudio.google.com/apikey)"
+            )
         else:
             st.error(
-                "Add `GEMINI_API_KEY` to `.env`, then restart Streamlit.  \n"
+                "No Gemini key.  \n"
+                "**Cloud:** Manage app → Settings → Secrets → "
+                '`GEMINI_API_KEY = "AIza..."`  \n'
+                "**Local:** add to `.env`, then restart.  \n"
                 "[Get free key](https://aistudio.google.com/apikey)"
             )
     elif provider == "xai":
@@ -424,9 +433,10 @@ Upload or index PDFs, ask questions in natural language, and get answers grounde
                 return
 
         if result.used_extractive_fallback and result.provider != "extractive":
+            note = (result.note or "").strip()
             st.warning(
-                f"Engine **{result.provider}** unavailable — showing document extract. "
-                f"{result.note or ''}"
+                f"**{result.provider}** unavailable — showing document extract "
+                f"(still grounded in your PDFs).\n\n{note}"
             )
         elif result.provider == "extractive":
             st.info("Extractive mode: best matching passage from your PDFs.")
