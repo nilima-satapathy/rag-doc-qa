@@ -1,332 +1,523 @@
 """
-Accessible UI themes for the Streamlit RAG app.
+LinkedIn-ready professional themes for RAG Doc Q&A.
 
-Color choices target WCAG AA contrast for body text on backgrounds.
+Designed for portfolio screenshots: clear hierarchy, restrained color,
+high contrast text, and a product-quality SaaS aesthetic.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-# Theme catalog — tokens only (no Streamlit calls here)
 THEMES: dict[str, dict[str, Any]] = {
-    "dark": {
-        "label": "Dark (default)",
-        "description": "Low-glare dark UI for long sessions",
-        "bg": "#0b1220",
-        "bg_grad_mid": "#111827",
-        "bg_grad_end": "#0f172a",
-        "surface": "#1e293b",
-        "surface_2": "#0f172a",
-        "border": "#334155",
-        "text": "#f1f5f9",
-        "text_muted": "#94a3b8",
-        "text_subtle": "#64748b",
-        "primary": "#818cf8",
-        "primary_soft": "rgba(129, 140, 248, 0.16)",
-        "primary_border": "rgba(129, 140, 248, 0.4)",
-        "success": "#34d399",
-        "warning": "#fbbf24",
-        "danger": "#f87171",
-        "hero_end": "#1e1b4b",
-        "cite_accent": "#818cf8",
-        "shadow": "rgba(0,0,0,0.35)",
-        "input_bg": "#1e293b",
-        "chip_bg": "#1e293b",
+    "professional_dark": {
+        "label": "Professional Dark",
+        "description": "LinkedIn-ready dark product UI (recommended)",
+        "bg": "#0c111b",
+        "bg_mid": "#0f1520",
+        "bg_end": "#121a27",
+        "sidebar": "#0a0f18",
+        "surface": "#151d2b",
+        "surface_elevated": "#1a2436",
+        "border": "#243044",
+        "border_soft": "#1c2738",
+        "text": "#f3f6fb",
+        "text_secondary": "#c5d0e0",
+        "text_muted": "#8b9bb0",
+        "text_faint": "#5c6b82",
+        "primary": "#6d7cff",
+        "primary_hover": "#8b97ff",
+        "primary_soft": "rgba(109, 124, 255, 0.12)",
+        "primary_border": "rgba(109, 124, 255, 0.35)",
+        "success": "#3ecf8e",
+        "success_soft": "rgba(62, 207, 142, 0.12)",
+        "warning": "#e8b339",
+        "danger": "#f07178",
+        "user_msg": "#1e2a4a",
+        "bot_msg": "#151d2b",
+        "hero_glow": "rgba(109, 124, 255, 0.08)",
+        "shadow": "0 12px 40px rgba(0, 0, 0, 0.45)",
+        "radius": "14px",
     },
-    "light": {
-        "label": "Light",
-        "description": "Clean light theme with indigo accents",
-        "bg": "#f8fafc",
-        "bg_grad_mid": "#f1f5f9",
-        "bg_grad_end": "#eef2ff",
+    "professional_light": {
+        "label": "Professional Light",
+        "description": "Clean light SaaS — great for LinkedIn daytime screenshots",
+        "bg": "#f4f6fa",
+        "bg_mid": "#eef1f7",
+        "bg_end": "#e8ecf4",
+        "sidebar": "#ffffff",
         "surface": "#ffffff",
-        "surface_2": "#f8fafc",
-        "border": "#e2e8f0",
+        "surface_elevated": "#ffffff",
+        "border": "#d8dee9",
+        "border_soft": "#e8edf5",
         "text": "#0f172a",
-        "text_muted": "#475569",
-        "text_subtle": "#64748b",
+        "text_secondary": "#334155",
+        "text_muted": "#64748b",
+        "text_faint": "#94a3b8",
         "primary": "#4f46e5",
-        "primary_soft": "rgba(79, 70, 229, 0.10)",
-        "primary_border": "rgba(79, 70, 229, 0.35)",
+        "primary_hover": "#4338ca",
+        "primary_soft": "rgba(79, 70, 229, 0.08)",
+        "primary_border": "rgba(79, 70, 229, 0.28)",
         "success": "#059669",
+        "success_soft": "rgba(5, 150, 105, 0.1)",
         "warning": "#d97706",
         "danger": "#dc2626",
-        "hero_end": "#e0e7ff",
-        "cite_accent": "#4f46e5",
-        "shadow": "rgba(15, 23, 42, 0.08)",
-        "input_bg": "#ffffff",
-        "chip_bg": "#ffffff",
+        "user_msg": "#eef2ff",
+        "bot_msg": "#ffffff",
+        "hero_glow": "rgba(79, 70, 229, 0.06)",
+        "shadow": "0 10px 30px rgba(15, 23, 42, 0.08)",
+        "radius": "14px",
     },
-    "midnight": {
-        "label": "Midnight teal",
-        "description": "Cool professional dark with teal accents",
-        "bg": "#0a1628",
-        "bg_grad_mid": "#0c1a2e",
-        "bg_grad_end": "#0b1f24",
-        "surface": "#132337",
-        "surface_2": "#0d1b2a",
-        "border": "#1e3a4c",
-        "text": "#e8f4f8",
-        "text_muted": "#8ba3b5",
-        "text_subtle": "#5c7a8a",
-        "primary": "#2dd4bf",
-        "primary_soft": "rgba(45, 212, 191, 0.14)",
-        "primary_border": "rgba(45, 212, 191, 0.4)",
+    "executive_slate": {
+        "label": "Executive Slate",
+        "description": "Muted charcoal — serious, executive presence",
+        "bg": "#12141a",
+        "bg_mid": "#161922",
+        "bg_end": "#1a1d27",
+        "sidebar": "#0e1016",
+        "surface": "#1c1f2a",
+        "surface_elevated": "#222633",
+        "border": "#2e3444",
+        "border_soft": "#252a38",
+        "text": "#f1f3f7",
+        "text_secondary": "#c8ceda",
+        "text_muted": "#9aa3b5",
+        "text_faint": "#6b7385",
+        "primary": "#a78bfa",
+        "primary_hover": "#c4b5fd",
+        "primary_soft": "rgba(167, 139, 250, 0.12)",
+        "primary_border": "rgba(167, 139, 250, 0.35)",
         "success": "#34d399",
+        "success_soft": "rgba(52, 211, 153, 0.12)",
         "warning": "#fbbf24",
-        "danger": "#fb7185",
-        "hero_end": "#0f3d3a",
-        "cite_accent": "#2dd4bf",
-        "shadow": "rgba(0,0,0,0.4)",
-        "input_bg": "#132337",
-        "chip_bg": "#132337",
-    },
-    "high_contrast": {
-        "label": "High contrast",
-        "description": "Maximum readability (WCAG AAA-oriented)",
-        "bg": "#000000",
-        "bg_grad_mid": "#000000",
-        "bg_grad_end": "#0a0a0a",
-        "surface": "#111111",
-        "surface_2": "#000000",
-        "border": "#ffffff",
-        "text": "#ffffff",
-        "text_muted": "#f5f5f5",
-        "text_subtle": "#e5e5e5",
-        "primary": "#ffff00",
-        "primary_soft": "rgba(255, 255, 0, 0.12)",
-        "primary_border": "#ffff00",
-        "success": "#00ff00",
-        "warning": "#ffcc00",
-        "danger": "#ff4444",
-        "hero_end": "#111111",
-        "cite_accent": "#ffff00",
-        "shadow": "rgba(255,255,255,0.12)",
-        "input_bg": "#111111",
-        "chip_bg": "#111111",
+        "danger": "#f87171",
+        "user_msg": "#2a2540",
+        "bot_msg": "#1c1f2a",
+        "hero_glow": "rgba(167, 139, 250, 0.07)",
+        "shadow": "0 12px 40px rgba(0, 0, 0, 0.5)",
+        "radius": "14px",
     },
 }
 
-DEFAULT_THEME = "dark"
+DEFAULT_THEME = "professional_dark"
 
 
 def theme_options() -> dict[str, str]:
-    """id -> label for selectboxes."""
     return {k: v["label"] for k, v in THEMES.items()}
 
 
 def build_css(theme_id: str) -> str:
-    """Return full CSS string for the selected theme."""
     t = THEMES.get(theme_id, THEMES[DEFAULT_THEME])
+    r = t["radius"]
 
     return f"""
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
   :root {{
     --bg: {t["bg"]};
-    --bg-mid: {t["bg_grad_mid"]};
-    --bg-end: {t["bg_grad_end"]};
+    --bg-mid: {t["bg_mid"]};
+    --bg-end: {t["bg_end"]};
+    --sidebar: {t["sidebar"]};
     --surface: {t["surface"]};
-    --surface-2: {t["surface_2"]};
+    --surface-2: {t["surface_elevated"]};
     --border: {t["border"]};
+    --border-soft: {t["border_soft"]};
     --text: {t["text"]};
-    --text-muted: {t["text_muted"]};
-    --text-subtle: {t["text_subtle"]};
+    --text-2: {t["text_secondary"]};
+    --muted: {t["text_muted"]};
+    --faint: {t["text_faint"]};
     --primary: {t["primary"]};
+    --primary-hover: {t["primary_hover"]};
     --primary-soft: {t["primary_soft"]};
     --primary-border: {t["primary_border"]};
     --success: {t["success"]};
+    --success-soft: {t["success_soft"]};
     --warning: {t["warning"]};
     --danger: {t["danger"]};
-    --hero-end: {t["hero_end"]};
-    --cite: {t["cite_accent"]};
+    --user-msg: {t["user_msg"]};
+    --bot-msg: {t["bot_msg"]};
+    --hero-glow: {t["hero_glow"]};
     --shadow: {t["shadow"]};
-    --input-bg: {t["input_bg"]};
-    --chip-bg: {t["chip_bg"]};
+    --radius: {r};
+    --font: "DM Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
   }}
 
   html, body, [data-testid="stAppViewContainer"], .stApp {{
-    background: linear-gradient(165deg, var(--bg) 0%, var(--bg-mid) 48%, var(--bg-end) 100%) !important;
+    background: linear-gradient(165deg, var(--bg) 0%, var(--bg-mid) 50%, var(--bg-end) 100%) !important;
     color: var(--text) !important;
+    font-family: var(--font) !important;
+  }}
+
+  .main .block-container {{
+    padding-top: 1.4rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 1100px !important;
   }}
 
   [data-testid="stHeader"] {{
     background: transparent !important;
   }}
 
+  /* Sidebar */
   [data-testid="stSidebar"] {{
-    background: var(--surface-2) !important;
+    background: var(--sidebar) !important;
     border-right: 1px solid var(--border) !important;
+  }}
+  [data-testid="stSidebar"] > div:first-child {{
+    padding-top: 1.2rem;
   }}
   [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
   [data-testid="stSidebar"] label,
-  [data-testid="stSidebar"] span {{
-    color: var(--text-muted) !important;
+  [data-testid="stSidebar"] span,
+  [data-testid="stSidebar"] .stCaption {{
+    color: var(--muted) !important;
+    font-family: var(--font) !important;
   }}
-
-  h1, h2, h3, h4 {{
+  [data-testid="stSidebar"] h1,
+  [data-testid="stSidebar"] h2,
+  [data-testid="stSidebar"] h3 {{
     color: var(--text) !important;
+    font-family: var(--font) !important;
+    font-weight: 650 !important;
     letter-spacing: -0.02em;
   }}
 
-  p, label, .stMarkdown, .stCaption, span {{
-    color: var(--text-muted) !important;
+  /* Typography */
+  h1, h2, h3, h4 {{
+    color: var(--text) !important;
+    font-family: var(--font) !important;
+    letter-spacing: -0.03em !important;
+    font-weight: 650 !important;
+  }}
+  p, .stMarkdown, .stCaption {{
+    font-family: var(--font) !important;
+  }}
+  code, pre {{
+    font-family: var(--mono) !important;
+    font-size: 0.84em !important;
   }}
 
-  /* Inputs / widgets */
-  .stTextInput input, .stNumberInput input, .stSelectbox div[data-baseweb="select"] > div {{
-    background-color: var(--input-bg) !important;
+  /* Widgets */
+  .stTextInput input,
+  .stNumberInput input,
+  div[data-baseweb="select"] > div {{
+    background-color: var(--surface) !important;
     color: var(--text) !important;
     border-color: var(--border) !important;
+    border-radius: 10px !important;
+    font-family: var(--font) !important;
   }}
-  .stSlider label {{ color: var(--text-muted) !important; }}
+  .stSlider label {{ color: var(--muted) !important; }}
 
-  /* Buttons */
   .stButton > button {{
     border-radius: 10px !important;
     border: 1px solid var(--border) !important;
     background: var(--surface) !important;
     color: var(--text) !important;
     font-weight: 600 !important;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    font-family: var(--font) !important;
+    font-size: 0.9rem !important;
+    letter-spacing: -0.01em;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    box-shadow: none !important;
   }}
   .stButton > button:hover {{
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 1px var(--primary-border);
+    border-color: var(--primary-border) !important;
+    background: var(--surface-2) !important;
   }}
   .stButton > button[kind="primary"] {{
-    background: var(--primary-soft) !important;
-    border-color: var(--primary-border) !important;
-    color: var(--text) !important;
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #ffffff !important;
+  }}
+  .stButton > button[kind="primary"]:hover {{
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
   }}
 
-  /* Chat */
+  /* Chat messages */
   [data-testid="stChatMessage"] {{
-    background: var(--surface) !important;
+    background: var(--bot-msg) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 14px !important;
-    padding: 0.35rem 0.5rem !important;
+    border-radius: var(--radius) !important;
+    padding: 0.55rem 0.75rem !important;
+    box-shadow: var(--shadow);
+  }}
+  [data-testid="stChatMessageContent"] {{
+    color: var(--text-2) !important;
   }}
 
-  /* Hero */
+  /* Alerts */
+  div[data-testid="stAlert"] {{
+    border-radius: 12px !important;
+    border: 1px solid var(--border) !important;
+    font-family: var(--font) !important;
+  }}
+
+  /* ===== Custom components ===== */
+  .app-topbar {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-soft);
+  }}
+  .app-logo {{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }}
+  .app-logo-mark {{
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: linear-gradient(145deg, var(--primary) 0%, #4c5fd5 100%);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: 0 6px 18px var(--primary-soft);
+  }}
+  .app-logo-text {{
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }}
+  .app-logo-text .title {{
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }}
+  .app-logo-text .sub {{
+    font-size: 0.75rem;
+    color: var(--faint);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }}
+  .status-pill {{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--success);
+    background: var(--success-soft);
+    border: 1px solid rgba(62, 207, 142, 0.28);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+  }}
+  .status-pill .dot {{
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.2);
+  }}
+  .status-pill.warn {{
+    color: var(--warning);
+    background: rgba(232, 179, 57, 0.12);
+    border-color: rgba(232, 179, 57, 0.3);
+  }}
+  .status-pill.warn .dot {{
+    background: var(--warning);
+    box-shadow: 0 0 0 3px rgba(232, 179, 57, 0.2);
+  }}
+
   .hero {{
-    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 50%, var(--hero-end) 100%);
+    position: relative;
+    background:
+      radial-gradient(600px 180px at 10% 0%, var(--hero-glow), transparent 60%),
+      var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 1.35rem 1.5rem 1.15rem;
-    margin-bottom: 0.85rem;
-    box-shadow: 0 12px 36px var(--shadow);
+    padding: 1.35rem 1.5rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
   }}
-  .hero-badge {{
+  .hero-kicker {{
     display: inline-block;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--primary);
     background: var(--primary-soft);
     border: 1px solid var(--primary-border);
     border-radius: 999px;
-    padding: 0.28rem 0.75rem;
-    margin-bottom: 0.6rem;
+    padding: 0.28rem 0.7rem;
+    margin-bottom: 0.7rem;
   }}
   .hero h1 {{
-    margin: 0 0 0.35rem 0 !important;
-    font-size: 1.7rem !important;
-    font-weight: 750 !important;
+    margin: 0 0 0.4rem 0 !important;
+    font-size: 1.65rem !important;
+    font-weight: 700 !important;
     color: var(--text) !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1.2 !important;
   }}
   .hero p {{
     margin: 0 !important;
-    color: var(--text-muted) !important;
-    font-size: 0.96rem;
+    color: var(--muted) !important;
+    font-size: 0.95rem;
     line-height: 1.55;
+    max-width: 640px;
+    font-weight: 450;
+  }}
+  .hero-meta {{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0.95rem;
+  }}
+  .hero-chip {{
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-2);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.28rem 0.55rem;
+    letter-spacing: -0.01em;
   }}
 
-  /* Stats */
   .stat-row {{
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
-    flex-wrap: wrap;
-    margin: 0.75rem 0 1rem 0;
+    margin: 0 0 1.15rem 0;
+  }}
+  @media (max-width: 900px) {{
+    .stat-row {{ grid-template-columns: repeat(2, 1fr); }}
   }}
   .stat {{
-    flex: 1 1 130px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 0.8rem 0.95rem;
-    min-width: 110px;
-    box-shadow: 0 4px 14px var(--shadow);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--shadow);
   }}
   .stat .label {{
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-subtle);
-    margin-bottom: 0.25rem;
-    font-weight: 600;
+    letter-spacing: 0.07em;
+    color: var(--faint);
+    margin-bottom: 0.3rem;
+    font-weight: 700;
   }}
   .stat .value {{
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
   }}
   .stat .value.ok {{ color: var(--success); }}
   .stat .value.warn {{ color: var(--warning); }}
 
-  .chip-label {{
-    font-size: 0.8rem;
-    color: var(--text-subtle);
-    margin: 0.35rem 0 0.45rem 0;
-    font-weight: 600;
+  .section-label {{
+    font-size: 0.78rem;
+    font-weight: 650;
+    color: var(--faint);
+    letter-spacing: 0.02em;
+    margin: 0.15rem 0 0.55rem 0;
   }}
 
   .cite-card {{
-    background: var(--surface);
+    background: var(--surface-2);
     border: 1px solid var(--border);
-    border-left: 3px solid var(--cite);
-    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+    border-radius: 0 10px 10px 0;
     padding: 0.7rem 0.85rem;
-    margin: 0.4rem 0;
+    margin: 0.45rem 0;
   }}
   .cite-card .meta {{
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--primary);
     font-weight: 700;
-    margin-bottom: 0.28rem;
+    margin-bottom: 0.3rem;
+    font-family: var(--mono);
+    letter-spacing: -0.02em;
   }}
   .cite-card .snip {{
-    font-size: 0.86rem;
-    color: var(--text-muted);
-    line-height: 1.45;
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }}
+
+  .side-brand {{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-soft);
+  }}
+  .side-brand .mark {{
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: linear-gradient(145deg, var(--primary), #5563d6);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+  }}
+  .side-brand .name {{
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text) !important;
+    letter-spacing: -0.02em;
+  }}
+  .side-brand .role {{
+    font-size: 0.7rem;
+    color: var(--faint) !important;
+    font-weight: 500;
   }}
 
   .side-section-title {{
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 750;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-subtle) !important;
-    margin: 0.85rem 0 0.4rem 0;
+    letter-spacing: 0.09em;
+    color: var(--faint) !important;
+    margin: 1rem 0 0.45rem 0;
   }}
   .doc-pill {{
-    background: var(--chip-bg);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 0.4rem 0.6rem;
-    margin: 0.3rem 0;
-    font-size: 0.8rem;
-    color: var(--text);
+    padding: 0.42rem 0.6rem;
+    margin: 0.28rem 0;
+    font-size: 0.76rem;
+    color: var(--text-2);
+    font-family: var(--mono);
     word-break: break-all;
+    letter-spacing: -0.02em;
   }}
   .theme-hint {{
-    font-size: 0.78rem;
-    color: var(--text-subtle) !important;
-    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--faint) !important;
+    margin: 0.2rem 0 0.4rem 0;
+    line-height: 1.4;
+  }}
+  .side-footer {{
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-soft);
+    font-size: 0.72rem;
+    color: var(--faint) !important;
+    line-height: 1.45;
   }}
 
   footer {{ visibility: hidden; }}
   #MainMenu {{ visibility: hidden; }}
+  [data-testid="stToolbar"] {{ display: none !important; }}
 </style>
 """

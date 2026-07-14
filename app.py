@@ -1,10 +1,5 @@
 """
-Streamlit chat UI for RAG Document Q&A.
-
-Features:
-  - Accessible multi-theme design (light / dark / midnight / high contrast)
-  - Theme picker in Settings (persists for the browser session)
-  - Chat + citations + index controls
+RAG Document Q&A — professional Streamlit UI (LinkedIn / portfolio ready).
 
 Run:
   streamlit run app.py
@@ -51,8 +46,8 @@ PROVIDER_LABELS = {
 
 
 st.set_page_config(
-    page_title="RAG Doc Q&A · Nilima",
-    page_icon="📄",
+    page_title="DocQ · RAG Portfolio",
+    page_icon="◆",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -88,15 +83,14 @@ def render_citations(citations: list) -> None:
     if not citations:
         st.caption("No citations returned.")
         return
-    with st.expander(f"📎 Sources ({len(citations)})", expanded=True):
+    with st.expander(f"Sources · {len(citations)} retrieved", expanded=True):
         for i, c in enumerate(citations, start=1):
-            dist = f"{c.distance:.4f}" if c.distance is not None else "n/a"
-            # Escape not needed for our controlled snippets; keep simple
+            dist = f"{c.distance:.3f}" if c.distance is not None else "n/a"
             snip = (c.snippet or "").replace("<", "&lt;").replace(">", "&gt;")
             st.markdown(
                 f"""
 <div class="cite-card">
-  <div class="meta">[{i}] {c.source_file} · chunk {c.chunk_index} · distance {dist}</div>
+  <div class="meta">[{i}] {c.source_file}  ·  chunk {c.chunk_index}  ·  d={dist}</div>
   <div class="snip">{snip}</div>
 </div>
                 """,
@@ -105,32 +99,26 @@ def render_citations(citations: list) -> None:
 
 
 def provider_status_message(provider: str) -> None:
-    # Re-read .env every sidebar render so a saved key shows up after refresh
     gemini_key = config.get_gemini_api_key()
     xai_key = config.get_xai_api_key()
 
     if provider == "extractive":
-        st.success("Free mode — answers from matching PDF text (no API cost).")
+        st.success("Free mode — matching PDF passages (no API).")
     elif provider == "ollama":
-        st.info("Needs Ollama running locally (`ollama pull llama3.2`).")
+        st.info("Requires local Ollama (`ollama pull llama3.2`).")
     elif provider == "gemini":
         if gemini_key:
-            st.success(
-                f"Gemini key loaded ({len(gemini_key)} chars) · "
-                f"model `{config.GEMINI_MODEL}`"
-            )
+            st.success(f"Gemini connected · `{config.GEMINI_MODEL}`")
         else:
             st.error(
-                "**GEMINI_API_KEY not found in `.env`.**  \n"
-                "File must be: `rag-doc-qa/.env` (next to `app.py`).  \n"
-                "Line must be exactly: `GEMINI_API_KEY=AIza...`  \n"
-                "Then **restart** Streamlit (Ctrl+C → `streamlit run app.py`)."
+                "Add `GEMINI_API_KEY` to `.env`, then restart Streamlit.  \n"
+                "[Get free key](https://aistudio.google.com/apikey)"
             )
     elif provider == "xai":
         if xai_key:
-            st.warning("xAI key set — needs **credits** or falls back to extractive.")
+            st.warning("xAI key set — needs credits, else falls back.")
         else:
-            st.error("No XAI key — prefer free modes above.")
+            st.error("No XAI key — use Gemini or Extractive.")
 
 
 def main() -> None:
@@ -141,39 +129,44 @@ def main() -> None:
     pdfs = list_pdfs(DATA_DIR)
     options_map = theme_options()
 
-    # ----- Sidebar -----
+    # ---------- Sidebar ----------
     with st.sidebar:
-        st.markdown("### ⚙️ Settings")
+        st.markdown(
+            """
+<div class="side-brand">
+  <div class="mark">◆</div>
+  <div>
+    <div class="name">DocQ</div>
+    <div class="role">RAG · Portfolio demo</div>
+  </div>
+</div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        # ---- Appearance / theme ----
         st.markdown(
             '<p class="side-section-title">Appearance</p>',
             unsafe_allow_html=True,
         )
         theme_keys = list(options_map.keys())
-        try:
-            theme_index = theme_keys.index(theme_id)
-        except ValueError:
-            theme_index = 0
-
+        theme_index = theme_keys.index(theme_id) if theme_id in theme_keys else 0
         new_theme = st.selectbox(
-            "Page theme",
+            "Theme",
             options=theme_keys,
             format_func=lambda k: options_map[k],
             index=theme_index,
-            help="Colors follow accessible contrast standards. High contrast is best for low vision.",
+            label_visibility="collapsed",
         )
         if new_theme != st.session_state.ui_theme:
             st.session_state.ui_theme = new_theme
             st.rerun()
-
         st.markdown(
             f'<p class="theme-hint">{THEMES[new_theme]["description"]}</p>',
             unsafe_allow_html=True,
         )
 
         st.markdown(
-            '<p class="side-section-title">Index health</p>',
+            '<p class="side-section-title">System</p>',
             unsafe_allow_html=True,
         )
         if ok:
@@ -182,17 +175,17 @@ def main() -> None:
             st.warning(status_msg)
 
         st.markdown(
-            '<p class="side-section-title">Documents in data/</p>',
+            '<p class="side-section-title">Knowledge base</p>',
             unsafe_allow_html=True,
         )
         if pdfs:
             for p in pdfs:
                 st.markdown(
-                    f'<div class="doc-pill">📄 {p.name}</div>',
+                    f'<div class="doc-pill">{p.name}</div>',
                     unsafe_allow_html=True,
                 )
         else:
-            st.info("No PDFs. Run `python scripts/generate_sample_pdfs.py`.")
+            st.info("No PDFs in data/")
 
         st.markdown(
             '<p class="side-section-title">Retrieval</p>',
@@ -200,32 +193,28 @@ def main() -> None:
         )
         top_k = st.slider("Top‑k chunks", 1, 8, int(TOP_K))
         max_distance = st.slider(
-            "Max distance (stricter = lower)",
-            min_value=0.3,
-            max_value=1.5,
-            value=min(max(float(MAX_DISTANCE), 0.3), 1.5),
-            step=0.05,
-            help="If the best chunk is farther than this, answer is “I don’t know”.",
+            "Max distance",
+            0.3,
+            1.5,
+            min(max(float(MAX_DISTANCE), 0.3), 1.5),
+            0.05,
+            help="Stricter (lower) → more “I don’t know” when weak match.",
         )
 
-        st.markdown(
-            '<p class="side-section-title">Index actions</p>',
-            unsafe_allow_html=True,
-        )
-        if st.button("🔄 Rebuild index", type="primary", use_container_width=True):
-            with st.spinner("Chunking PDFs and embedding into Chroma…"):
+        if st.button("Rebuild index", type="primary", use_container_width=True):
+            with st.spinner("Indexing PDFs…"):
                 try:
                     stats = build_index(DATA_DIR, reset=True)
                     st.success(
-                        f"Indexed **{stats['chunk_count']}** chunks from "
-                        f"**{len(stats['by_source'])}** file(s)."
+                        f"Indexed {stats['chunk_count']} chunks · "
+                        f"{len(stats['by_source'])} files"
                     )
                     st.rerun()
                 except Exception as exc:  # noqa: BLE001
                     st.error(f"Index failed: {exc}")
 
         st.markdown(
-            '<p class="side-section-title">Answer mode</p>',
+            '<p class="side-section-title">Answer engine</p>',
             unsafe_allow_html=True,
         )
         prov_options = list(PROVIDER_LABELS.keys())
@@ -241,31 +230,55 @@ def main() -> None:
         )
         provider_status_message(provider)
 
-        st.markdown(
-            '<p class="side-section-title">Chat</p>',
-            unsafe_allow_html=True,
-        )
-        if st.button("🗑️ Clear chat", use_container_width=True):
+        if st.button("Clear conversation", use_container_width=True):
             st.session_state.messages = []
             st.rerun()
 
-        st.markdown("---")
-        st.caption(
-            "Built by **Nilima Satapathy** · "
-            "[GitHub](https://github.com/nilima-satapathy/rag-doc-qa) · "
-            "Theme applies for this browser session"
+        st.markdown(
+            """
+<div class="side-footer">
+  Built by <strong>Nilima Satapathy</strong><br/>
+  AI Test · SDET · GenAI Quality<br/>
+  <a href="https://github.com/nilima-satapathy/rag-doc-qa" target="_blank">github.com/nilima-satapathy/rag-doc-qa</a>
+</div>
+            """,
+            unsafe_allow_html=True,
         )
 
-    # ----- Main hero -----
+    # ---------- Main ----------
+    status_class = "status-pill" if ok else "status-pill warn"
+    st.markdown(
+        f"""
+<div class="app-topbar">
+  <div class="app-logo">
+    <div class="app-logo-mark">◆</div>
+    <div class="app-logo-text">
+      <div class="title">DocQ</div>
+      <div class="sub">Retrieval-augmented document Q&amp;A</div>
+    </div>
+  </div>
+  <div class="{status_class}"><span class="dot"></span>{status_msg}</div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.markdown(
         """
 <div class="hero">
-  <div class="hero-badge">Project 3 · RAG portfolio</div>
-  <h1>📄 Document Q&amp;A</h1>
+  <div class="hero-kicker">Project 3 · Portfolio · GenAI Quality</div>
+  <h1>Ask your documents — with sources</h1>
   <p>
-    Ask questions about your PDFs. Retrieval finds the best chunks; answers include citations.
-    Change the page theme anytime in <strong>Settings → Appearance</strong>.
+    Production-style RAG demo: PDF ingest, vector retrieval, grounded answers, and citations.
+    Built to showcase SDET + AI Test skills for product-company hiring.
   </p>
+  <div class="hero-meta">
+    <span class="hero-chip">Python</span>
+    <span class="hero-chip">Chroma</span>
+    <span class="hero-chip">Gemini / Extractive</span>
+    <span class="hero-chip">Eval hit@3 13/13</span>
+    <span class="hero-chip">Streamlit</span>
+  </div>
 </div>
         """,
         unsafe_allow_html=True,
@@ -281,29 +294,28 @@ def main() -> None:
     <div class="value {'ok' if ok else 'warn'}">{status_msg}</div>
   </div>
   <div class="stat">
-    <div class="label">Documents</div>
+    <div class="label">Corpus</div>
     <div class="value">{len(pdfs)} PDF{'s' if len(pdfs) != 1 else ''}</div>
   </div>
   <div class="stat">
-    <div class="label">Answer mode</div>
-    <div class="value" style="font-size:1rem;">{provider_short}</div>
+    <div class="label">Engine</div>
+    <div class="value" style="font-size:0.98rem">{provider_short}</div>
   </div>
   <div class="stat">
     <div class="label">Theme</div>
-    <div class="value" style="font-size:0.95rem;">{theme_label}</div>
+    <div class="value" style="font-size:0.95rem">{theme_label}</div>
   </div>
 </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ----- Chat state -----
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
     if not st.session_state.messages:
         st.markdown(
-            '<p class="chip-label">Try an example question</p>',
+            '<p class="section-label">Quick prompts</p>',
             unsafe_allow_html=True,
         )
         cols = st.columns(2)
@@ -314,7 +326,7 @@ def main() -> None:
                     st.rerun()
 
     for msg in st.session_state.messages:
-        avatar = "🧑‍💻" if msg["role"] == "user" else "🤖"
+        avatar = "◉" if msg["role"] == "user" else "◆"
         with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
             if msg.get("citations"):
@@ -323,26 +335,23 @@ def main() -> None:
                 st.caption(msg["meta"])
 
     prompt = st.session_state.pop("_pending_prompt", None) or st.chat_input(
-        "Ask anything about your indexed PDFs…"
+        "Ask a question about your knowledge base…"
     )
     if not prompt:
         return
 
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="🧑‍💻"):
+    with st.chat_message("user", avatar="◉"):
         st.markdown(prompt)
 
-    with st.chat_message("assistant", avatar="🤖"):
+    with st.chat_message("assistant", avatar="◆"):
         if not ok and count == 0:
-            err = (
-                "No vector index yet. Click **Rebuild index** in the sidebar, "
-                "then ask again."
-            )
+            err = "Index not ready. Use **Rebuild index** in the sidebar, then retry."
             st.error(err)
             st.session_state.messages.append({"role": "assistant", "content": err})
             return
 
-        with st.spinner("Searching your documents and building an answer…"):
+        with st.spinner("Retrieving context and composing answer…"):
             try:
                 result = answer_question(
                     prompt,
@@ -360,19 +369,19 @@ def main() -> None:
 
         if result.used_extractive_fallback and result.provider != "extractive":
             st.warning(
-                f"Provider **{result.provider}** failed — showing document text instead. "
+                f"Engine **{result.provider}** unavailable — showing document extract. "
                 f"{result.note or ''}"
             )
         elif result.provider == "extractive":
             st.info("Extractive mode: best matching passage from your PDFs.")
         elif result.weak_retrieval:
-            st.warning("Weak retrieval — answer may be “I don’t know”.")
+            st.warning("Weak retrieval match — answer may be incomplete.")
 
         st.markdown(result.answer)
         render_citations(result.citations)
         meta = (
-            f"provider={result.provider} · llm={result.used_llm} · "
-            f"weak={result.weak_retrieval} · top_k={top_k} · theme={theme_id}"
+            f"{result.provider} · llm={result.used_llm} · "
+            f"top_k={top_k} · {theme_id}"
         )
         st.caption(meta)
 
