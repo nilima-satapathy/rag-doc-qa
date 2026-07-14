@@ -603,22 +603,76 @@ def build_css(theme_id: str) -> str:
 
   footer {{ visibility: hidden; }}
   #MainMenu {{ visibility: hidden; }}
-  /* Keep deploy toolbar hidden, but NEVER hide sidebar expand/collapse */
-  [data-testid="stToolbar"] {{
-    right: 1rem !important;
-  }}
-  /* Expand control when sidebar is collapsed (top-left chevron) */
+
+  /* ===== Sidebar expand / collapse (replace broken material icon text) ===== */
+  /* Collapsed state: button at top-left of main area */
   [data-testid="collapsedControl"],
   [data-testid="stSidebarCollapsedControl"] {{
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    z-index: 999 !important;
+    z-index: 1000000 !important;
+    position: fixed !important;
+    top: 0.85rem !important;
+    left: 0.85rem !important;
   }}
-  /* Collapse control on open sidebar */
-  [data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"],
-  section[data-testid="stSidebar"] button[kind="header"] {{
+  [data-testid="collapsedControl"] button,
+  [data-testid="stSidebarCollapsedControl"] button {{
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    min-width: 2.6rem !important;
+    min-height: 2.6rem !important;
+    border-radius: 10px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
+    box-shadow: var(--shadow) !important;
+    color: var(--text) !important;
+  }}
+  /* Hide raw "keyboard_double_arrow_*" text / broken icon glyphs */
+  [data-testid="collapsedControl"] span,
+  [data-testid="stSidebarCollapsedControl"] span,
+  [data-testid="stSidebarCollapseButton"] span,
+  section[data-testid="stSidebar"] button[kind="headerNoPadding"] span,
+  section[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"] span,
+  section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] span {{
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+  }}
+  /* Expand icon (sidebar closed) → chevron right / panel open */
+  [data-testid="collapsedControl"] button::before,
+  [data-testid="stSidebarCollapsedControl"] button::before {{
+    content: "»" !important;
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    color: var(--primary) !important;
+    line-height: 1 !important;
+    display: block !important;
+  }}
+  /* Collapse icon (sidebar open) — Streamlit header button in sidebar */
+  section[data-testid="stSidebar"] button[kind="headerNoPadding"],
+  section[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"],
+  section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"],
+  [data-testid="stSidebarCollapseButton"] button {{
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+    border-radius: 10px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
     visibility: visible !important;
+    opacity: 1 !important;
+  }}
+  section[data-testid="stSidebar"] button[kind="headerNoPadding"]::before,
+  section[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"]::before,
+  section[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"]::before,
+  [data-testid="stSidebarCollapseButton"] button::before {{
+    content: "«" !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: var(--primary) !important;
+    line-height: 1 !important;
+    display: block !important;
   }}
 </style>
 """

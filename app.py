@@ -133,16 +133,25 @@ def main() -> None:
     pdfs = list_pdfs(DATA_DIR)
     options_map = theme_options()
 
-    # ---------- Left Settings panel (Streamlit collapsible sidebar) ----------
-    # Collapse/expand with the « / » control on the panel edge or top-left when closed.
+    # ---------- Left Settings panel (native Streamlit sidebar) ----------
+    # Expand: click » when panel is closed (top-left).
+    # Collapse: click « in the Settings header area (Streamlit control).
     with st.sidebar:
         st.markdown(
             """
 <div style="
-  font-size:1.45rem; font-weight:800; letter-spacing:-0.03em;
-  margin:0 0 0.85rem 0; padding-bottom:0.65rem;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin:0 0 0.85rem 0; padding-bottom:0.65rem;
   border-bottom:1px solid rgba(128,128,128,0.25);
-">Settings</div>
+">
+  <div style="font-size:1.45rem; font-weight:800; letter-spacing:-0.03em;">
+    Settings
+  </div>
+  <div style="
+    font-size:0.72rem; font-weight:650; letter-spacing:0.04em;
+    text-transform:uppercase; opacity:0.65; white-space:nowrap;
+  " title="Use « at the top of this panel to collapse">« collapse</div>
+</div>
             """,
             unsafe_allow_html=True,
         )
