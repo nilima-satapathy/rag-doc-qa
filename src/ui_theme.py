@@ -293,11 +293,33 @@ def build_css(theme_id: str) -> str:
     letter-spacing: -0.03em;
     line-height: 1.2;
   }}
+  .app-logo-text .title.docq-name {{
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(105deg, var(--text) 0%, var(--primary) 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--primary);
+  }}
   .app-logo-text .sub {{
-    font-size: 0.75rem;
-    color: var(--faint);
+    font-size: 0.78rem;
+    color: var(--muted);
     font-weight: 500;
     letter-spacing: 0.01em;
+  }}
+  /* About expander polish */
+  div[data-testid="stExpander"] {{
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px !important;
+    margin-bottom: 0.85rem !important;
+  }}
+  div[data-testid="stExpander"] summary {{
+    font-weight: 650 !important;
+    color: var(--text) !important;
+    font-family: var(--font) !important;
   }}
   .status-pill {{
     display: inline-flex;

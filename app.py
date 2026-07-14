@@ -248,8 +248,8 @@ def main() -> None:
   <div class="app-logo">
     <div class="app-logo-mark">◆</div>
     <div class="app-logo-text">
-      <div class="title">DocQ</div>
-      <div class="sub">Retrieval-augmented document Q&amp;A</div>
+      <div class="title docq-name">DocQ</div>
+      <div class="sub">Ask your documents — with sources</div>
     </div>
   </div>
   <div class="{status_class}"><span class="dot"></span>{status_msg}</div>
@@ -258,26 +258,28 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        """
-<div class="hero">
-  <div class="hero-kicker">Project 3 · Portfolio · GenAI Quality</div>
-  <h1>Ask your documents — with sources</h1>
-  <p>
-    Production-style RAG demo: PDF ingest, vector retrieval, grounded answers, and citations.
-    Built to showcase SDET + AI Test skills for product-company hiring.
-  </p>
-  <div class="hero-meta">
-    <span class="hero-chip">Python</span>
-    <span class="hero-chip">Chroma</span>
-    <span class="hero-chip">Gemini / Extractive</span>
-    <span class="hero-chip">Eval hit@3 13/13</span>
-    <span class="hero-chip">Streamlit</span>
-  </div>
-</div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # About panel — collapsed by default; click to expand
+    with st.expander("About DocQ · what this app is", expanded=False):
+        st.markdown(
+            """
+**DocQ** is a retrieval-augmented document Q&A app (RAG).
+
+Upload or index PDFs, ask questions in natural language, and get answers grounded in your files — with **citations** so you can verify every claim.
+
+| | |
+|--|--|
+| **What it does** | PDF ingest → chunk → vector search → grounded answer + sources |
+| **Stack** | Python · Chroma · Streamlit · Gemini / Extractive / Ollama |
+| **Eval** | Retrieval hit@3 **13/13** on the in-corpus golden set |
+| **Built by** | Nilima Satapathy · AI Test / SDET / GenAI Quality |
+| **Repo** | [github.com/nilima-satapathy/rag-doc-qa](https://github.com/nilima-satapathy/rag-doc-qa) |
+
+**Portfolio note:** Project 3 on the public AI career journey — designed to demonstrate product-quality GenAI + test-engineering craft for hiring managers.
+            """
+        )
+        st.caption(
+            "Project 3 · Portfolio · GenAI Quality  ·  Python · Chroma · Gemini · Streamlit"
+        )
 
     provider_short = PROVIDER_LABELS.get(provider, provider).split("·")[-1].strip()
     theme_label = options_map.get(theme_id, theme_id)
