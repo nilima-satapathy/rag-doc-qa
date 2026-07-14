@@ -1,7 +1,12 @@
 """
-Streamlit chat UI for RAG Document Q&A (polished UI).
+Streamlit chat UI for RAG Document Q&A.
 
-Run (from project root, venv active):
+Features:
+  - Accessible multi-theme design (light / dark / midnight / high contrast)
+  - Theme picker in Settings (persists for the browser session)
+  - Chat + citations + index controls
+
+Run:
   streamlit run app.py
 """
 
@@ -20,6 +25,7 @@ import src.config as config
 from src.generate import answer_question
 from src.ingest import list_pdfs
 from src.retrieve import build_index, get_client
+from src.ui_theme import DEFAULT_THEME, THEMES, build_css, theme_options
 
 CHROMA_DIR = config.CHROMA_DIR
 COLLECTION_NAME = config.COLLECTION_NAME
@@ -54,149 +60,18 @@ st.set_page_config(
 )
 
 
-def inject_css() -> None:
-    st.markdown(
-        """
-<style>
-  /* ----- Global ----- */
-  .stApp {
-    background: linear-gradient(165deg, #0b1220 0%, #111827 45%, #0f172a 100%);
-  }
-  [data-testid="stSidebar"] {
-    background: #0f172a;
-    border-right: 1px solid #1e293b;
-  }
-  [data-testid="stSidebar"] * {
-    color: #e2e8f0;
-  }
-  h1, h2, h3 {
-    color: #f8fafc !important;
-    letter-spacing: -0.02em;
-  }
-  p, label, .stMarkdown, .stCaption {
-    color: #cbd5e1 !important;
-  }
+def init_theme() -> str:
+    if "ui_theme" not in st.session_state:
+        st.session_state.ui_theme = DEFAULT_THEME
+    theme_id = st.session_state.ui_theme
+    if theme_id not in THEMES:
+        theme_id = DEFAULT_THEME
+        st.session_state.ui_theme = theme_id
+    return theme_id
 
-  /* ----- Hero ----- */
-  .hero {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 55%, #1e1b4b 100%);
-    border: 1px solid #334155;
-    border-radius: 16px;
-    padding: 1.4rem 1.6rem 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-  }
-  .hero-badge {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #a5b4fc;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(129, 140, 248, 0.35);
-    border-radius: 999px;
-    padding: 0.25rem 0.7rem;
-    margin-bottom: 0.65rem;
-  }
-  .hero h1 {
-    margin: 0 0 0.35rem 0 !important;
-    font-size: 1.75rem !important;
-    font-weight: 700 !important;
-    color: #f8fafc !important;
-  }
-  .hero p {
-    margin: 0 !important;
-    color: #94a3b8 !important;
-    font-size: 0.98rem;
-    line-height: 1.5;
-  }
 
-  /* ----- Stat cards ----- */
-  .stat-row {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin: 0.85rem 0 1.1rem 0;
-  }
-  .stat {
-    flex: 1 1 140px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    min-width: 120px;
-  }
-  .stat .label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #94a3b8;
-    margin-bottom: 0.25rem;
-  }
-  .stat .value {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #f1f5f9;
-  }
-  .stat .value.ok { color: #34d399; }
-  .stat .value.warn { color: #fbbf24; }
-
-  /* ----- Example chips ----- */
-  .chip-label {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin: 0.5rem 0 0.4rem 0;
-  }
-
-  /* ----- Citation cards ----- */
-  .cite-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-left: 3px solid #818cf8;
-    border-radius: 10px;
-    padding: 0.75rem 0.9rem;
-    margin: 0.45rem 0;
-  }
-  .cite-card .meta {
-    font-size: 0.8rem;
-    color: #a5b4fc;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-  }
-  .cite-card .snip {
-    font-size: 0.86rem;
-    color: #cbd5e1;
-    line-height: 1.45;
-  }
-
-  /* ----- Sidebar polish ----- */
-  .side-section-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #64748b !important;
-    margin: 0.8rem 0 0.4rem 0;
-  }
-  .doc-pill {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 0.4rem 0.6rem;
-    margin: 0.3rem 0;
-    font-size: 0.8rem;
-    color: #e2e8f0;
-    word-break: break-all;
-  }
-
-  /* Hide default footer noise a bit */
-  footer { visibility: hidden; }
-  #MainMenu { visibility: hidden; }
-</style>
-        """,
-        unsafe_allow_html=True,
-    )
+def apply_theme(theme_id: str) -> None:
+    st.markdown(build_css(theme_id), unsafe_allow_html=True)
 
 
 def index_status() -> tuple[bool, int, str]:
@@ -218,11 +93,13 @@ def render_citations(citations: list) -> None:
     with st.expander(f"📎 Sources ({len(citations)})", expanded=True):
         for i, c in enumerate(citations, start=1):
             dist = f"{c.distance:.4f}" if c.distance is not None else "n/a"
+            # Escape not needed for our controlled snippets; keep simple
+            snip = (c.snippet or "").replace("<", "&lt;").replace(">", "&gt;")
             st.markdown(
                 f"""
 <div class="cite-card">
   <div class="meta">[{i}] {c.source_file} · chunk {c.chunk_index} · distance {dist}</div>
-  <div class="snip">{c.snippet}</div>
+  <div class="snip">{snip}</div>
 </div>
                 """,
                 unsafe_allow_html=True,
@@ -250,14 +127,44 @@ def provider_status_message(provider: str) -> None:
 
 
 def main() -> None:
-    inject_css()
+    theme_id = init_theme()
+    apply_theme(theme_id)
 
     ok, count, status_msg = index_status()
     pdfs = list_pdfs(DATA_DIR)
+    options_map = theme_options()
 
     # ----- Sidebar -----
     with st.sidebar:
-        st.markdown("### ⚙️ Control panel")
+        st.markdown("### ⚙️ Settings")
+
+        # ---- Appearance / theme ----
+        st.markdown(
+            '<p class="side-section-title">Appearance</p>',
+            unsafe_allow_html=True,
+        )
+        theme_keys = list(options_map.keys())
+        try:
+            theme_index = theme_keys.index(theme_id)
+        except ValueError:
+            theme_index = 0
+
+        new_theme = st.selectbox(
+            "Page theme",
+            options=theme_keys,
+            format_func=lambda k: options_map[k],
+            index=theme_index,
+            help="Colors follow accessible contrast standards. High contrast is best for low vision.",
+        )
+        if new_theme != st.session_state.ui_theme:
+            st.session_state.ui_theme = new_theme
+            st.rerun()
+
+        st.markdown(
+            f'<p class="theme-hint">{THEMES[new_theme]["description"]}</p>',
+            unsafe_allow_html=True,
+        )
+
         st.markdown(
             '<p class="side-section-title">Index health</p>',
             unsafe_allow_html=True,
@@ -314,11 +221,13 @@ def main() -> None:
             '<p class="side-section-title">Answer mode</p>',
             unsafe_allow_html=True,
         )
-        options = list(PROVIDER_LABELS.keys())
-        default_idx = options.index(LLM_PROVIDER) if LLM_PROVIDER in options else 0
+        prov_options = list(PROVIDER_LABELS.keys())
+        default_idx = (
+            prov_options.index(LLM_PROVIDER) if LLM_PROVIDER in prov_options else 0
+        )
         provider = st.selectbox(
             "Provider",
-            options=options,
+            options=prov_options,
             format_func=lambda k: PROVIDER_LABELS[k],
             index=default_idx,
             label_visibility="collapsed",
@@ -329,19 +238,15 @@ def main() -> None:
             '<p class="side-section-title">Chat</p>',
             unsafe_allow_html=True,
         )
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button("🗑️ Clear", use_container_width=True):
-                st.session_state.messages = []
-                st.rerun()
-        with c2:
-            st.caption("Local demo")
+        if st.button("🗑️ Clear chat", use_container_width=True):
+            st.session_state.messages = []
+            st.rerun()
 
         st.markdown("---")
         st.caption(
             "Built by **Nilima Satapathy** · "
             "[GitHub](https://github.com/nilima-satapathy/rag-doc-qa) · "
-            "secrets stay in `.env`"
+            "Theme applies for this browser session"
         )
 
     # ----- Main hero -----
@@ -351,16 +256,16 @@ def main() -> None:
   <div class="hero-badge">Project 3 · RAG portfolio</div>
   <h1>📄 Document Q&amp;A</h1>
   <p>
-    Ask questions about your PDFs. The app retrieves the best matching chunks,
-    then answers with citations — free extractive mode by default, or Gemini / Ollama / Grok.
+    Ask questions about your PDFs. Retrieval finds the best chunks; answers include citations.
+    Change the page theme anytime in <strong>Settings → Appearance</strong>.
   </p>
 </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Stat cards
     provider_short = PROVIDER_LABELS.get(provider, provider).split("·")[-1].strip()
+    theme_label = options_map.get(theme_id, theme_id)
     st.markdown(
         f"""
 <div class="stat-row">
@@ -377,8 +282,8 @@ def main() -> None:
     <div class="value" style="font-size:1rem;">{provider_short}</div>
   </div>
   <div class="stat">
-    <div class="label">Top‑k</div>
-    <div class="value">{top_k}</div>
+    <div class="label">Theme</div>
+    <div class="value" style="font-size:0.95rem;">{theme_label}</div>
   </div>
 </div>
         """,
@@ -389,7 +294,6 @@ def main() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Example question buttons (only when chat empty)
     if not st.session_state.messages:
         st.markdown(
             '<p class="chip-label">Try an example question</p>',
@@ -402,7 +306,6 @@ def main() -> None:
                     st.session_state._pending_prompt = q
                     st.rerun()
 
-    # History
     for msg in st.session_state.messages:
         avatar = "🧑‍💻" if msg["role"] == "user" else "🤖"
         with st.chat_message(msg["role"], avatar=avatar):
@@ -412,7 +315,6 @@ def main() -> None:
             if msg.get("meta"):
                 st.caption(msg["meta"])
 
-    # Pending example click or chat input
     prompt = st.session_state.pop("_pending_prompt", None) or st.chat_input(
         "Ask anything about your indexed PDFs…"
     )
@@ -463,7 +365,7 @@ def main() -> None:
         render_citations(result.citations)
         meta = (
             f"provider={result.provider} · llm={result.used_llm} · "
-            f"weak={result.weak_retrieval} · top_k={top_k}"
+            f"weak={result.weak_retrieval} · top_k={top_k} · theme={theme_id}"
         )
         st.caption(meta)
 
