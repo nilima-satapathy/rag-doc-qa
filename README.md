@@ -1,18 +1,18 @@
 # RAG Document Q&A (`rag-doc-qa`)
 
-[![Milestones](https://img.shields.io/badge/Milestones-M1–M4%20complete-2ea44f)](./MILESTONES.md)
+[![Milestones](https://img.shields.io/badge/Milestones-M1–M5%20complete-2ea44f)](./MILESTONES.md)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B)](https://streamlit.io)
-[![RAG](https://img.shields.io/badge/GenAI-RAG%20pipeline-7C3AED)](./MILESTONES.md)
+[![Eval](https://img.shields.io/badge/Retrieval%20hit%403-13%2F13-success)](./eval/last_results.json)
 
-Ask questions over **your PDFs** in a **browser chat**. The app retrieves relevant chunks, answers with an LLM **only from that context**, and shows **citations**.
+Ask questions over **your PDFs** in a **browser chat**. The app retrieves relevant chunks, answers with an LLM **only from that context**, shows **citations**, and includes a **measured eval set**.
 
 **Author:** [Nilima Satapathy](https://github.com/nilima-satapathy) · Progress: **[ai-career-journey](https://github.com/nilima-satapathy/ai-career-journey)**
 
 | | |
 |---|---|
-| **Status** | In progress — **M1–M4 complete** (local web UI ready) |
-| **Stack** | Python · pypdf · Chroma · SpaceXAI/xAI · **Streamlit** |
+| **Status** | In progress — **M1–M5 complete** |
+| **Stack** | Python · pypdf · Chroma · SpaceXAI/xAI · Streamlit |
 | **Releases** | [tags](https://github.com/nilima-satapathy/rag-doc-qa/releases) |
 
 ---
@@ -22,10 +22,38 @@ Ask questions over **your PDFs** in a **browser chat**. The app retrieves releva
 ```text
 PDF → chunks (M1) → Chroma search (M2) → Grok answer + citations (M3)
                                               ↓
-                                    Streamlit chat UI (M4)  ← you use this
+                                    Streamlit chat UI (M4)
                                               ↓
-                                    Eval (M5) → Deploy public URL (M6)
+                                    Eval (M5) ✅ → Deploy public URL (M6)
 ```
+
+---
+
+## Evaluation (M5) — required portfolio signal
+
+Golden set: **`eval/questions.json`** (14 cases: 13 in-corpus + 1 out-of-scope).
+
+```powershell
+python scripts/build_index.py
+python eval/run_eval.py --top-k 3
+# optional (needs API credits):
+# python eval/run_eval.py --with-llm
+```
+
+### Latest local results
+
+| Metric | Result |
+|--------|--------|
+| # docs indexed | 3 PDFs → 6 chunks |
+| # eval questions (scored) | 13 in-corpus (+ 1 negative skipped for doc-hit) |
+| **Retrieval hit-rate@3** | **13/13 (100%)** |
+| Keyword-in-context | 13/13 (100%) |
+| Avg retrieval latency | ~292 ms |
+| Known limits | Small corpus; out-of-scope questions still return *some* nearest chunks (LLM “I don’t know” relies on M3 distance/prompt) |
+
+Snapshot: [`eval/last_results.json`](./eval/last_results.json)
+
+**What hit-rate@3 means:** for each question with an expected PDF, that file appears in the **top 3** retrieved sources.
 
 ---
 
@@ -36,55 +64,26 @@ cd Desktop\Code\rag-doc-qa
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-
-# One-time: sample PDFs + vector index
 python scripts/generate_sample_pdfs.py
 python scripts/build_index.py
 
-# API key for answers (copy .env.example → .env)
-# XAI_API_KEY=xai-...
-# Add credits at https://console.x.ai
-
+# .env → XAI_API_KEY=...  (+ credits at https://console.x.ai)
 streamlit run app.py
 ```
 
-Browser opens at **http://localhost:8501**
-
-### In the UI
-
-| Feature | What it does |
-|---------|----------------|
-| Chat box | Ask questions about the PDFs |
-| **Sources / citations** | File name, chunk id, distance, snippet |
-| **Rebuild index** | Re-chunk + re-embed all `data/*.pdf` |
-| Top-k / max distance | Tune retrieval strictness |
-| Clear chat | Reset conversation |
-
-**Example questions:**  
-*What timeout does ApiClient use?* · *What is Page Object Model?* · *What is RAG?*
+Browser: **http://localhost:8501**
 
 ---
 
-## CLI (still available)
+## CLI
 
 ```powershell
 python scripts/run_m1_chunk.py
 python scripts/build_index.py
 python scripts/run_m2_search.py "What is RAG?"
 python scripts/run_m3_ask.py "What timeout does ApiClient use?"
+python eval/run_eval.py
 ```
-
----
-
-## API key (M3–M4 answers)
-
-```env
-# .env (never commit)
-XAI_API_KEY=xai-your-key-here
-```
-
-- Create key + **credits**: [console.x.ai](https://console.x.ai)  
-- Without credits, the API returns 403; retrieval still works.
 
 ---
 
@@ -92,21 +91,17 @@ XAI_API_KEY=xai-your-key-here
 
 ```text
 rag-doc-qa/
-├── app.py                 # M4 Streamlit UI
-├── data/                  # sample PDFs
+├── app.py
+├── data/                     # sample PDFs
+├── eval/
+│   ├── questions.json        # golden questions
+│   ├── run_eval.py
+│   └── last_results.json     # last measured run
 ├── scripts/
-│   ├── run_m1_chunk.py
-│   ├── build_index.py
-│   ├── run_m2_search.py
-│   └── run_m3_ask.py
 └── src/
-    ├── ingest.py
-    ├── retrieve.py
-    ├── llm_client.py
-    └── generate.py
 ```
 
-**Next (M5):** Eval script on ≥10 questions with hit-rate numbers in README.
+**Next (M6):** public deploy + architecture diagram + final README polish.
 
 ---
 

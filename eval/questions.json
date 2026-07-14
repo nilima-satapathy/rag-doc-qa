@@ -1,0 +1,87 @@
+[
+  {
+    "id": "p1-timeout",
+    "question": "What is the default timeout for ApiClient?",
+    "relevant_doc": "project1-api-automation-notes.pdf",
+    "must_include_in_context": ["10 seconds", "timeout"]
+  },
+  {
+    "id": "p1-test-count",
+    "question": "How many automated tests are in the API suite?",
+    "relevant_doc": "project1-api-automation-notes.pdf",
+    "must_include_in_context": ["77"]
+  },
+  {
+    "id": "p1-target-api",
+    "question": "Which target API does Project 1 use?",
+    "relevant_doc": "project1-api-automation-notes.pdf",
+    "must_include_in_context": ["JSONPlaceholder"]
+  },
+  {
+    "id": "p1-404-vs-empty",
+    "question": "What is the difference between HTTP 404 and 200 with an empty list?",
+    "relevant_doc": "project1-api-automation-notes.pdf",
+    "must_include_in_context": ["404", "empty"]
+  },
+  {
+    "id": "p1-fake-writes",
+    "question": "Does JSONPlaceholder really persist POST data?",
+    "relevant_doc": "project1-api-automation-notes.pdf",
+    "must_include_in_context": ["fakes", "persist"]
+  },
+  {
+    "id": "p2-pom",
+    "question": "What is Page Object Model in Project 2?",
+    "relevant_doc": "project2-playwright-pom-notes.pdf",
+    "must_include_in_context": ["Page Object", "selectors"]
+  },
+  {
+    "id": "p2-target",
+    "question": "What website does the Playwright suite test?",
+    "relevant_doc": "project2-playwright-pom-notes.pdf",
+    "must_include_in_context": ["saucedemo"]
+  },
+  {
+    "id": "p2-credentials",
+    "question": "What demo credentials are used for happy-path login?",
+    "relevant_doc": "project2-playwright-pom-notes.pdf",
+    "must_include_in_context": ["standard_user", "secret_sauce"]
+  },
+  {
+    "id": "p2-suite-size",
+    "question": "How many UI tests are in the Playwright suite?",
+    "relevant_doc": "project2-playwright-pom-notes.pdf",
+    "must_include_in_context": ["9"]
+  },
+  {
+    "id": "p2-trace",
+    "question": "How do you open a Playwright failure trace?",
+    "relevant_doc": "project2-playwright-pom-notes.pdf",
+    "must_include_in_context": ["show-trace"]
+  },
+  {
+    "id": "rag-definition",
+    "question": "What does RAG stand for and mean?",
+    "relevant_doc": "rag-and-ai-quality-notes.pdf",
+    "must_include_in_context": ["Retrieval-Augmented", "Generation"]
+  },
+  {
+    "id": "rag-vs-finetune",
+    "question": "When should you use RAG instead of fine-tuning?",
+    "relevant_doc": "rag-and-ai-quality-notes.pdf",
+    "must_include_in_context": ["RAG", "fine-tuning"]
+  },
+  {
+    "id": "rag-idonknow",
+    "question": "What should a good system say when documents lack the answer?",
+    "relevant_doc": "rag-and-ai-quality-notes.pdf",
+    "must_include_in_context": ["do not know"]
+  },
+  {
+    "id": "neg-unrelated",
+    "question": "What is the capital of France?",
+    "relevant_doc": null,
+    "expect_weak": true,
+    "notes": "Not in docs — used to check we do not treat random retrieval as a strong hit on a portfolio doc"
+  }
+]

@@ -1,0 +1,227 @@
+{
+  "ran_at": "2026-07-14T02:13:32.120683+00:00",
+  "top_k": 3,
+  "with_llm": false,
+  "summary": {
+    "n_questions": 14,
+    "n_scored_doc_hit": 13,
+    "retrieval_hit_rate": "13/13",
+    "retrieval_hit_rate_pct": 100.0,
+    "keyword_hit_rate": "13/13",
+    "keyword_hit_rate_pct": 100.0,
+    "avg_retrieval_ms": 292.4,
+    "misses": []
+  },
+  "rows": [
+    {
+      "id": "p1-timeout",
+      "question": "What is the default timeout for ApiClient?",
+      "relevant_doc": "project1-api-automation-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project1-api-automation-notes.pdf",
+        "project1-api-automation-notes.pdf",
+        "project2-playwright-pom-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 319.5,
+      "best_distance": 0.6135406494140625
+    },
+    {
+      "id": "p1-test-count",
+      "question": "How many automated tests are in the API suite?",
+      "relevant_doc": "project1-api-automation-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project1-api-automation-notes.pdf",
+        "project1-api-automation-notes.pdf",
+        "project2-playwright-pom-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 297.7,
+      "best_distance": 0.39317232370376587
+    },
+    {
+      "id": "p1-target-api",
+      "question": "Which target API does Project 1 use?",
+      "relevant_doc": "project1-api-automation-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project1-api-automation-notes.pdf",
+        "project2-playwright-pom-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 297.9,
+      "best_distance": 0.6789878010749817
+    },
+    {
+      "id": "p1-404-vs-empty",
+      "question": "What is the difference between HTTP 404 and 200 with an empty list?",
+      "relevant_doc": "project1-api-automation-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project1-api-automation-notes.pdf",
+        "project1-api-automation-notes.pdf",
+        "rag-and-ai-quality-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 303.4,
+      "best_distance": 0.6054936051368713
+    },
+    {
+      "id": "p1-fake-writes",
+      "question": "Does JSONPlaceholder really persist POST data?",
+      "relevant_doc": "project1-api-automation-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project1-api-automation-notes.pdf",
+        "project1-api-automation-notes.pdf",
+        "rag-and-ai-quality-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 294.7,
+      "best_distance": 0.5283852219581604
+    },
+    {
+      "id": "p2-pom",
+      "question": "What is Page Object Model in Project 2?",
+      "relevant_doc": "project2-playwright-pom-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "rag-and-ai-quality-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 304.2,
+      "best_distance": 0.6023563146591187
+    },
+    {
+      "id": "p2-target",
+      "question": "What website does the Playwright suite test?",
+      "relevant_doc": "project2-playwright-pom-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "project2-playwright-pom-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 301.5,
+      "best_distance": 0.5405869483947754
+    },
+    {
+      "id": "p2-credentials",
+      "question": "What demo credentials are used for happy-path login?",
+      "relevant_doc": "project2-playwright-pom-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "project2-playwright-pom-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 298.6,
+      "best_distance": 0.639665424823761
+    },
+    {
+      "id": "p2-suite-size",
+      "question": "How many UI tests are in the Playwright suite?",
+      "relevant_doc": "project2-playwright-pom-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "project2-playwright-pom-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 293.3,
+      "best_distance": 0.5260406732559204
+    },
+    {
+      "id": "p2-trace",
+      "question": "How do you open a Playwright failure trace?",
+      "relevant_doc": "project2-playwright-pom-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "project2-playwright-pom-notes.pdf",
+        "rag-and-ai-quality-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 277.3,
+      "best_distance": 0.5976711511611938
+    },
+    {
+      "id": "rag-definition",
+      "question": "What does RAG stand for and mean?",
+      "relevant_doc": "rag-and-ai-quality-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "rag-and-ai-quality-notes.pdf",
+        "rag-and-ai-quality-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 274.7,
+      "best_distance": 0.6973855495452881
+    },
+    {
+      "id": "rag-vs-finetune",
+      "question": "When should you use RAG instead of fine-tuning?",
+      "relevant_doc": "rag-and-ai-quality-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "rag-and-ai-quality-notes.pdf",
+        "rag-and-ai-quality-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 275.3,
+      "best_distance": 0.5592780113220215
+    },
+    {
+      "id": "rag-idonknow",
+      "question": "What should a good system say when documents lack the answer?",
+      "relevant_doc": "rag-and-ai-quality-notes.pdf",
+      "expect_weak": false,
+      "top_sources": [
+        "rag-and-ai-quality-notes.pdf",
+        "rag-and-ai-quality-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": true,
+      "keyword_hit": true,
+      "retrieval_ms": 278.9,
+      "best_distance": 0.5900498628616333
+    },
+    {
+      "id": "neg-unrelated",
+      "question": "What is the capital of France?",
+      "relevant_doc": null,
+      "expect_weak": true,
+      "top_sources": [
+        "project2-playwright-pom-notes.pdf",
+        "project1-api-automation-notes.pdf",
+        "project1-api-automation-notes.pdf"
+      ],
+      "retrieval_hit": null,
+      "keyword_hit": null,
+      "retrieval_ms": 277.0,
+      "best_distance": 0.9491442441940308
+    }
+  ]
+}
